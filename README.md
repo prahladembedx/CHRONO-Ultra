@@ -12,7 +12,7 @@
 
 **No frameworks. No dependencies. Just pure HTML, CSS & Vanilla JS.**
 
-[🌐 Live Demo](#) · [📥 Download](#installation) · [🐛 Report Bug](../../issues) · [✨ Request Feature](../../issues)
+[🌐 Live Demo](https://prahladembedx.github.io/CHRONO-Ultra/) · [📥 Download](#installation) · [🐛 Report Bug](../../issues) · [✨ Request Feature](../../issues)
 
 </div>
 
@@ -398,20 +398,6 @@ Contributions are welcome! Please:
 
 ---
 
-## 📄 License
-
-```
-MIT License — Copyright (c) 2025 CHRONO Ultra
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files, to deal
-in the Software without restriction, including without limitation the
-rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software.
-```
-
----
-
 ## 🙏 Credits
 
 | Resource | Usage |
@@ -426,7 +412,7 @@ and/or sell copies of the Software.
 
 <div align="center">
 
-Built with ❤️ using **zero dependencies** · Runs on the bare Web Platform
+Built with ❤️ by prahladembedx · Runs on the bare Web Platform
 
 ⭐ **Star this repo** if CHRONO helped you stay focused!
 
