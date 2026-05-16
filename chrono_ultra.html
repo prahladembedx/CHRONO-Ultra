@@ -2,700 +2,700 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#06060f">
-<meta name="description" content="CHRONO Ultra — Advanced Clock with Alarms, Pomodoro, World Clock & more">
-<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CHRONO">
+<meta name="description" content="CHRONO Ultra — Advanced Clock, Alarms, Focus Timer & Productivity Suite">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <title>CHRONO Ultra</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════
-   CSS VARIABLES
-══════════════════════════════════════════════ */
-:root {
-  --primary:#00d4ff; --primary-rgb:0,212,255;
-  --bg:#06060f; --bg2:#0c0c1e;
-  --surface:rgba(255,255,255,.04);
-  --surface2:rgba(255,255,255,.07);
-  --border:rgba(255,255,255,.09);
-  --text:#e4e4f0; --text-muted:rgba(228,228,240,.45);
-  --glass:rgba(6,6,20,.68);
-  --font-clock:'Orbitron',monospace;
-  --font-ui:'Sora',sans-serif;
-  --radius:20px;
+/* ══ ROOT VARIABLES ══ */
+:root{
+  --pr:#00d4ff; --pr-rgb:0,212,255;
+  --bg:#06060f; --bg2:#0d0d1e;
+  --sf:rgba(255,255,255,.04);
+  --sf2:rgba(255,255,255,.07);
+  --bd:rgba(255,255,255,.08);
+  --tx:#e4e4f0; --tx2:rgba(228,228,240,.45);
+  --gl:rgba(6,6,20,.7);
+  --fc:'Orbitron',monospace;
+  --fu:'Sora',sans-serif;
+  --rd:18px;
 }
-body.light{--bg:#eff0fa;--bg2:#e4e5f5;--surface:rgba(255,255,255,.6);--surface2:rgba(255,255,255,.85);--border:rgba(0,0,0,.08);--text:#12122a;--text-muted:rgba(18,18,42,.45);--glass:rgba(235,236,250,.75);}
-body.theme-blue  {--primary:#00d4ff;--primary-rgb:0,212,255;}
-body.theme-pink  {--primary:#ff2d7a;--primary-rgb:255,45,122;}
-body.theme-green {--primary:#00ffaa;--primary-rgb:0,255,170;}
-body.theme-yellow{--primary:#ffd200;--primary-rgb:255,210,0;}
-body.theme-purple{--primary:#c070ff;--primary-rgb:192,112,255;}
-body.theme-orange{--primary:#ff6b35;--primary-rgb:255,107,53;}
+body.light{
+  --bg:#f0f2ff; --bg2:#e8eaff;
+  --sf:rgba(255,255,255,.7); --sf2:rgba(255,255,255,.9);
+  --bd:rgba(0,0,0,.08);
+  --tx:#0d0d2e; --tx2:rgba(13,13,46,.45);
+  --gl:rgba(240,242,255,.8);
+}
+/* Themes */
+body.th-blue  {--pr:#00d4ff;--pr-rgb:0,212,255;}
+body.th-pink  {--pr:#ff0080;--pr-rgb:255,0,128;}
+body.th-green {--pr:#00ff88;--pr-rgb:0,255,136;}
+body.th-yellow{--pr:#ffcc00;--pr-rgb:255,204,0;}
+body.th-purple{--pr:#bf5fff;--pr-rgb:191,95,255;}
 
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-
-/* ── CUSTOM CURSOR ── */
-body{cursor:none;}
-#cur{
-  width:28px;height:28px;border-radius:50%;
-  border:2px solid var(--primary);
-  position:fixed;z-index:99999;pointer-events:none;
-  transform:translate(-50%,-50%);
-  transition:width .15s,height .15s,border-color .15s;
-  background:radial-gradient(circle,rgba(var(--primary-rgb),.15) 0%,transparent 70%);
-  display:flex;align-items:center;justify-content:center;
-}
-#cur::after{
-  content:'';width:4px;height:4px;border-radius:50%;
-  background:var(--primary);
-  box-shadow:0 0 6px rgba(var(--primary-rgb),1);
-}
-#cur.click{width:40px;height:40px;opacity:.6;}
-body *{cursor:none!important;}
-
+html,body{height:100%;}
 body{
-  font-family:var(--font-ui);
-  background:var(--bg);color:var(--text);
+  font-family:var(--fu);
+  background:var(--bg);color:var(--tx);
   min-height:100vh;overflow-x:hidden;
   transition:background .4s,color .4s;
 }
 
-/* ── CANVAS + BG ── */
-#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
-#bg-overlay{
-  position:fixed;inset:0;z-index:0;
+/* ══ CANVAS ══ */
+#pcvs{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#bgov{position:fixed;inset:0;z-index:0;
   background-size:cover;background-position:center;
-  opacity:0;transition:opacity .6s;
-}
-#bg-overlay.on{opacity:.35;}
+  opacity:0;transition:opacity .6s;}
+#bgov.on{opacity:.3;}
 
-/* ── APP LAYOUT ── */
+/* ══ LAYOUT ══ */
 .app{
   position:relative;z-index:1;
-  min-height:100vh;
   display:flex;flex-direction:column;align-items:center;
-  padding:16px 14px 60px;gap:12px;
-  animation:fadein .5s ease both;
+  padding:14px 12px 60px;gap:10px;
+  min-height:100vh;
+  animation:fi .5s ease both;
 }
-@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* ── TOP BAR ── */
+/* ══ TOP BAR ══ */
 .topbar{
-  width:100%;max-width:920px;
+  width:100%;max-width:940px;
   display:flex;align-items:center;justify-content:space-between;
-  padding:9px 18px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:50px;backdrop-filter:blur(24px);gap:8px;flex-wrap:wrap;
+  padding:8px 18px;
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:50px;backdrop-filter:blur(24px);gap:8px;
 }
-.greeting{font-size:.78rem;font-weight:600;color:var(--text-muted);white-space:nowrap;}
-.greeting em{color:var(--primary);font-style:normal;}
+.greeting{font-size:.78rem;font-weight:600;color:var(--tx2);}
+.greeting em{color:var(--pr);font-style:normal;}
 .topbar-mid{
-  flex:1;text-align:center;
-  font-size:.7rem;color:var(--text-muted);
-  font-style:italic;padding:0 10px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex:1;text-align:center;font-size:.68rem;
+  color:var(--tx2);font-style:italic;
+  padding:0 8px;overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;
 }
-.topbar-right{display:flex;gap:12px;align-items:center;flex-shrink:0;}
-.pill{font-size:.7rem;color:var(--text-muted);display:flex;align-items:center;gap:3px;}
+.tbar-r{display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.pill{font-size:.7rem;color:var(--tx2);display:flex;align-items:center;gap:3px;}
 
-/* ── KEYBOARD SHORTCUT HINT ── */
-.kshint{
-  position:fixed;bottom:18px;right:18px;z-index:100;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:10px 14px;
-  font-size:.68rem;color:var(--text-muted);line-height:1.8;
-  backdrop-filter:blur(20px);
-  opacity:0;pointer-events:none;
-  transition:opacity .3s;
-}
-.kshint.show{opacity:1;pointer-events:auto;}
-.kshint kbd{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;padding:1px 5px;font-size:.65rem;
-  font-family:'Space Mono',monospace;
-  color:var(--primary);
-}
-
-/* ══════════════════════════════════════════════
-   MAIN CLOCK CARD
-══════════════════════════════════════════════ */
+/* ══ CLOCK CARD ══ */
 .clock-card{
-  width:100%;max-width:920px;
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:28px;padding:36px 32px 28px;
+  width:100%;max-width:940px;
+  background:var(--gl);border:1px solid var(--bd);
+  border-radius:26px;padding:32px 28px 24px;
   backdrop-filter:blur(36px);text-align:center;
-  box-shadow:0 0 60px rgba(var(--primary-rgb),.15),0 24px 64px rgba(0,0,0,.35);
-  transition:box-shadow .4s,transform .4s;
-  position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(var(--pr-rgb),.14),0 20px 60px rgba(0,0,0,.3);
+  transition:box-shadow .4s;position:relative;overflow:hidden;
 }
 .clock-card::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% -20%,rgba(var(--primary-rgb),.08) 0%,transparent 70%);
+  background:radial-gradient(ellipse at 50% -10%,rgba(var(--pr-rgb),.07) 0%,transparent 65%);
   pointer-events:none;
 }
-.clock-card.alarm-ringing{animation:alarm-pulse .4s ease-in-out infinite alternate;}
-@keyframes alarm-pulse{
-  from{box-shadow:0 0 60px rgba(var(--primary-rgb),.2),0 24px 64px rgba(0,0,0,.35);}
-  to  {box-shadow:0 0 140px rgba(var(--primary-rgb),.8),0 0 50px rgba(var(--primary-rgb),.5);}
-}
-.clock-card.tilt-3d{
-  transform:perspective(900px) rotateX(6deg) rotateY(-4deg) scale(1.02);
-}
-.clock-card.tilt-3d:hover{
-  transform:perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.03);
+.clock-card.alarm-ring{animation:aring .4s ease-in-out infinite alternate;}
+@keyframes aring{
+  from{box-shadow:0 0 60px rgba(var(--pr-rgb),.2),0 20px 60px rgba(0,0,0,.3);}
+  to  {box-shadow:0 0 150px rgba(var(--pr-rgb),.9),0 0 60px rgba(var(--pr-rgb),.5);}
 }
 
 /* Mode switcher */
-.mode-sw{display:flex;justify-content:center;gap:6px;margin-bottom:22px;}
+.mode-sw{display:flex;justify-content:center;gap:6px;margin-bottom:20px;}
 .mode-btn{
   padding:5px 16px;border-radius:20px;
-  border:1px solid var(--border);background:var(--surface);
-  color:var(--text-muted);font-size:.68rem;font-weight:700;
+  border:1px solid var(--bd);background:var(--sf);
+  color:var(--tx2);font-size:.67rem;font-weight:700;
   letter-spacing:1px;text-transform:uppercase;
-  font-family:var(--font-ui);cursor:none;transition:all .18s;
+  font-family:var(--fu);cursor:pointer;transition:all .18s;
 }
-.mode-btn.active{background:var(--primary);color:var(--bg);border-color:var(--primary);}
-.mode-btn:hover:not(.active){color:var(--primary);}
+.mode-btn.active{background:var(--pr);color:#000;border-color:var(--pr);}
+.mode-btn:hover:not(.active){color:var(--pr);}
 
-/* ── DIGITAL CLOCK ── */
-.digital-wrap{display:none;}
-.digital-wrap.show{display:flex;justify-content:center;align-items:flex-start;}
+/* Digital clock */
+.dig-wrap{display:none;justify-content:center;align-items:flex-start;}
+.dig-wrap.show{display:flex;}
 .time-main{
-  font-family:var(--font-clock);
-  font-size:clamp(3.8rem,10vw,8rem);font-weight:900;
-  color:var(--primary);
-  text-shadow:0 0 40px rgba(var(--primary-rgb),.6);
+  font-family:var(--fc);
+  font-size:clamp(3.5rem,10vw,8rem);font-weight:900;
+  color:var(--pr);text-shadow:0 0 40px rgba(var(--pr-rgb),.6);
   font-variant-numeric:tabular-nums;letter-spacing:-.5px;
-  transition:font-family .3s,color .3s;
-  line-height:1;
+  line-height:1;transition:font-family .3s;
 }
-.time-main.neon{animation:neon-flicker 4s infinite;}
-@keyframes neon-flicker{
-  0%,18%,20%,52%,54%,64%,100%{
-    text-shadow:0 0 10px rgba(var(--primary-rgb),.9),
-                0 0 30px rgba(var(--primary-rgb),.8),
-                0 0 60px rgba(var(--primary-rgb),.6);
-  }
-  19%,53%,63%{text-shadow:none;}
+.time-main.neon{animation:nflk 5s infinite;}
+@keyframes nflk{
+  0%,18%,20%,52%,54%,100%{text-shadow:0 0 10px rgba(var(--pr-rgb),.9),0 0 30px rgba(var(--pr-rgb),.8),0 0 60px rgba(var(--pr-rgb),.5);}
+  19%,53%{text-shadow:none;}
 }
-.ampm{
-  font-family:var(--font-clock);font-size:clamp(1.1rem,2.5vw,2rem);
-  font-weight:700;color:var(--primary);opacity:.65;
+.ampm-badge{
+  font-family:var(--fc);font-size:clamp(1rem,2.5vw,2rem);
+  font-weight:700;color:var(--pr);opacity:.6;
   margin-top:.55em;margin-left:6px;transition:font-family .3s;
 }
 
-/* ── ANALOG CLOCK ── */
-.analog-wrap{display:none;}
-.analog-wrap.show{display:flex;justify-content:center;}
-#analog-svg{filter:drop-shadow(0 0 20px rgba(var(--primary-rgb),.4));}
-.a-face{fill:var(--surface2);stroke:var(--border);stroke-width:2;}
-.a-tick{stroke:var(--text-muted);stroke-width:1.5;}
-.a-tick-hr{stroke:var(--primary);stroke-width:2.5;}
-.a-hand-h{stroke:var(--text);stroke-width:5;stroke-linecap:round;transition:none;}
-.a-hand-m{stroke:var(--text);stroke-width:3.5;stroke-linecap:round;}
-.a-hand-s{stroke:var(--primary);stroke-width:2;stroke-linecap:round;}
-.a-center{fill:var(--primary);}
-.a-num{fill:var(--text-muted);font-size:10px;font-family:var(--font-clock);font-weight:700;}
+/* Analog clock */
+.ana-wrap{display:none;justify-content:center;}
+.ana-wrap.show{display:flex;}
+#ana-svg{filter:drop-shadow(0 0 18px rgba(var(--pr-rgb),.35));}
+.a-face{fill:var(--sf2);stroke:var(--bd);stroke-width:2;}
+.a-tick{stroke:var(--tx2);stroke-width:1.2;}
+.a-tick-h{stroke:var(--pr);stroke-width:2.5;}
+.a-hh{stroke:var(--tx);stroke-width:5;stroke-linecap:round;}
+.a-mh{stroke:var(--tx);stroke-width:3.5;stroke-linecap:round;}
+.a-sh{stroke:var(--pr);stroke-width:2;stroke-linecap:round;}
+.a-dot{fill:var(--pr);}
+.a-num{fill:var(--tx2);font-size:9px;font-family:var(--fc);font-weight:700;}
 
-/* ── FLIP CLOCK ── */
-.flip-wrap{display:none;justify-content:center;align-items:center;gap:4px;}
-.flip-wrap.show{display:flex;}
-.flip-sep{
-  font-family:var(--font-clock);font-size:clamp(2.5rem,7vw,5rem);
-  font-weight:900;color:var(--primary);
-  text-shadow:0 0 20px rgba(var(--primary-rgb),.5);
-  margin:0 2px;line-height:1;align-self:flex-start;margin-top:.08em;
-}
-.flip-digit-box{
-  display:flex;flex-direction:column;
-  width:clamp(52px,10vw,80px);height:clamp(72px,14vw,110px);
-  border-radius:8px;overflow:hidden;position:relative;
-  background:#050510;
-  box-shadow:0 4px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05);
-}
-.flip-digit-box::after{
-  content:'';position:absolute;left:0;right:0;top:50%;
-  height:2px;background:rgba(0,0,0,.8);z-index:10;
-}
-.flip-half{
-  height:50%;display:flex;align-items:center;justify-content:center;
-  overflow:hidden;font-family:var(--font-clock);
-  font-size:clamp(2rem,6vw,4.5rem);font-weight:900;
-  color:var(--primary);text-shadow:0 0 15px rgba(var(--primary-rgb),.5);
-  font-variant-numeric:tabular-nums;
-  backface-visibility:hidden;
-}
-.flip-top{
-  align-items:flex-end;padding-bottom:2px;
-  background:linear-gradient(180deg,#0a0a20 0%,#080815 100%);
-  transform-origin:bottom center;
-}
-.flip-bot{
-  align-items:flex-start;padding-top:2px;
-  background:linear-gradient(180deg,#050510 0%,#0a0a20 100%);
-}
-.flip-anim{animation:do-flip .35s ease-in-out forwards;}
-@keyframes do-flip{
-  0%  {transform:rotateX(0);}
-  50% {transform:rotateX(-90deg);}
-  100%{transform:rotateX(-90deg);}
-}
-
-/* ── DATE ── */
 .date-line{
-  font-size:clamp(.7rem,1.5vw,.85rem);letter-spacing:3px;
-  text-transform:uppercase;color:var(--text-muted);
-  margin:14px 0 22px;font-weight:600;
+  font-size:clamp(.68rem,1.5vw,.82rem);letter-spacing:3px;
+  text-transform:uppercase;color:var(--tx2);
+  margin:12px 0 20px;font-weight:600;
 }
+.ctrl-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.dismiss-btn{display:none;margin-top:10px;}
+.alarm-ring .dismiss-btn{display:inline-block;}
 
-/* ── CTRL ROW ── */
-.ctrl-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
-.alarm-dismiss-btn{display:none;margin-top:10px;}
-.alarm-ringing .alarm-dismiss-btn{display:inline-block;}
-
-/* ══════════════════════════════════════════════
-   BUTTONS
-══════════════════════════════════════════════ */
+/* ══ BUTTONS ══ */
 .btn{
-  padding:7px 17px;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text);
-  border-radius:50px;cursor:none;
-  font-family:var(--font-ui);font-size:.75rem;font-weight:600;
+  padding:7px 16px;border:1px solid var(--bd);
+  background:var(--sf2);color:var(--tx);
+  border-radius:50px;cursor:pointer;
+  font-family:var(--fu);font-size:.74rem;font-weight:600;
   letter-spacing:.5px;transition:all .18s;
   backdrop-filter:blur(8px);white-space:nowrap;user-select:none;
 }
-.btn:hover{border-color:var(--primary);color:var(--primary);
-  box-shadow:0 0 14px rgba(var(--primary-rgb),.3);transform:translateY(-1px);}
-.btn.active{background:var(--primary);color:var(--bg);border-color:var(--primary);
-  box-shadow:0 0 20px rgba(var(--primary-rgb),.5);}
+.btn:hover{border-color:var(--pr);color:var(--pr);
+  box-shadow:0 0 14px rgba(var(--pr-rgb),.3);transform:translateY(-1px);}
+.btn.active{background:var(--pr);color:#000;border-color:var(--pr);
+  box-shadow:0 0 20px rgba(var(--pr-rgb),.5);}
 .btn:active{transform:translateY(0);}
+.btn.danger{border-color:rgba(255,60,60,.5);color:#ff6060;}
+.btn.danger:hover{background:rgba(255,60,60,.15);}
 
-/* ══════════════════════════════════════════════
-   TABS
-══════════════════════════════════════════════ */
+/* ══ TABS ══ */
 .tabs{
-  width:100%;max-width:920px;
+  width:100%;max-width:940px;
   display:flex;
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--sf);border:1px solid var(--bd);
   border-radius:14px;overflow:hidden;backdrop-filter:blur(20px);
 }
 .tab{
-  flex:1;padding:10px 3px;
+  flex:1;padding:11px 4px;
   background:transparent;border:none;
-  color:var(--text-muted);
-  font-family:var(--font-ui);font-size:.63rem;font-weight:700;
+  color:var(--tx2);
+  font-family:var(--fu);font-size:.62rem;font-weight:700;
   letter-spacing:.8px;text-transform:uppercase;
-  cursor:none;transition:all .18s;
-  border-right:1px solid var(--border);
+  cursor:pointer;transition:all .18s;
+  border-right:1px solid var(--bd);
 }
 .tab:last-child{border-right:none;}
-.tab.active{background:var(--primary);color:var(--bg);}
-.tab:hover:not(.active){color:var(--primary);}
+.tab.active{background:var(--pr);color:#000;}
+.tab:hover:not(.active){color:var(--pr);}
 
-/* ── PANELS ── */
-.panel{width:100%;max-width:920px;display:none;}
+/* ══ PANELS ══ */
+.panel{width:100%;max-width:940px;display:none;}
 .panel.active{display:block;}
 .card{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);padding:24px;
+  background:var(--gl);border:1px solid var(--bd);
+  border-radius:var(--rd);padding:22px;
   backdrop-filter:blur(28px);
 }
-.sec-label{
-  font-size:.62rem;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--text-muted);font-weight:700;margin-bottom:14px;
+.card+.card{margin-top:10px;}
+.slbl{
+  font-size:.6rem;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--tx2);
+  font-weight:700;margin-bottom:12px;
 }
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
-@media(max-width:600px){.grid2{grid-template-columns:1fr;}}
-.divider{height:1px;background:var(--border);margin:16px 0;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.dvd{height:1px;background:var(--bd);margin:14px 0;}
 
-/* ── INPUTS ── */
+/* ══ INPUTS ══ */
 input[type=time],input[type=text],input[type=date],
-input[type=number],select,textarea{
-  background:var(--surface2);border:1px solid var(--border);
-  color:var(--text);border-radius:10px;
-  padding:8px 12px;font-family:var(--font-ui);font-size:.82rem;
-  outline:none;transition:border-color .2s;width:100%;
+input[type=number],input[type=datetime-local],
+select,textarea{
+  background:var(--sf2);border:1px solid var(--bd);
+  color:var(--tx);border-radius:10px;
+  padding:8px 12px;font-family:var(--fu);
+  font-size:.82rem;outline:none;
+  transition:border-color .2s;width:100%;
 }
-input:focus,select:focus,textarea:focus{border-color:var(--primary);}
-select option{background:#12122a;}
-textarea{resize:vertical;min-height:70px;}
-input[type=range]{width:100%;accent-color:var(--primary);}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);}
+select option{background:#0d0d2e;}
+textarea{resize:vertical;min-height:60px;}
+input[type=range]{width:100%;accent-color:var(--pr);cursor:pointer;}
+.input-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px;}
+.input-row input,.input-row select{flex:1;min-width:100px;}
 
-/* ── BIG TIMER ── */
-.big-timer{
-  font-family:var(--font-clock);
-  font-size:clamp(2.8rem,8vw,5.5rem);font-weight:700;
-  color:var(--primary);text-shadow:0 0 40px rgba(var(--primary-rgb),.5);
-  text-align:center;font-variant-numeric:tabular-nums;
-  letter-spacing:-.5px;margin-bottom:12px;transition:font-family .3s;
+/* ══ TOGGLE ══ */
+.tog{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+.tog-tr{
+  width:36px;height:19px;background:var(--bd);
+  border-radius:10px;position:relative;
+  transition:background .2s;flex-shrink:0;
 }
-.timer-sub{
-  text-align:center;font-size:.65rem;letter-spacing:2.5px;
-  text-transform:uppercase;color:var(--text-muted);
-  font-weight:700;margin-bottom:18px;
-}
-.btn-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
-.progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:18px;overflow:hidden;}
-.progress-fill{height:100%;background:var(--primary);border-radius:2px;
-  transition:width 1s linear;box-shadow:0 0 8px rgba(var(--primary-rgb),.6);}
-
-/* ══════════════════════════════════════════════
-   ALARM PANEL
-══════════════════════════════════════════════ */
-.alarm-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.alarm-item{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 14px;background:var(--surface);
-  border:1px solid var(--border);border-radius:12px;
-  transition:border-color .2s;
-}
-.alarm-item.on{border-color:rgba(var(--primary-rgb),.4);}
-.alarm-item .ai-time{
-  font-family:'Space Mono',monospace;font-size:1.1rem;
-  font-weight:700;color:var(--primary);flex-shrink:0;min-width:70px;
-}
-.alarm-item .ai-label{flex:1;font-size:.8rem;color:var(--text-muted);}
-.alarm-item .ai-sound{font-size:.7rem;color:var(--text-muted);}
-.alarm-item .ai-del{
-  background:none;border:none;cursor:none;
-  color:var(--text-muted);font-size:1rem;padding:4px;
-  transition:color .2s;
-}
-.alarm-item .ai-del:hover{color:#ff4466;}
-.alarm-add-form{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
-
-/* ── Toggle switch ── */
-.tog{display:flex;align-items:center;gap:6px;cursor:none;user-select:none;}
-.tog-track{
-  width:36px;height:19px;background:var(--border);border-radius:10px;
-  position:relative;transition:background .2s;flex-shrink:0;
-}
-.tog-track.on{background:var(--primary);}
-.tog-thumb{
+.tog-tr.on{background:var(--pr);}
+.tog-th{
   width:13px;height:13px;background:#fff;border-radius:50%;
   position:absolute;top:3px;left:3px;transition:left .2s;
   box-shadow:0 1px 4px rgba(0,0,0,.3);
 }
-.tog-track.on .tog-thumb{left:20px;}
-.tog-lbl{font-size:.78rem;color:var(--text-muted);}
+.tog-tr.on .tog-th{left:20px;}
+.tog-lb{font-size:.78rem;color:var(--tx2);}
 
-/* ══════════════════════════════════════════════
-   STOPWATCH LAPS
-══════════════════════════════════════════════ */
-.laps-list{
-  max-height:180px;overflow-y:auto;
-  display:flex;flex-direction:column;gap:5px;margin-top:12px;
-}
-.lap-item{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:7px 12px;background:var(--surface);
-  border:1px solid var(--border);border-radius:8px;
-  font-size:.78rem;font-family:'Space Mono',monospace;
-}
-.lap-n{color:var(--text-muted);}
-.lap-t{color:var(--primary);font-weight:700;}
-.lap-d{color:var(--text-muted);font-size:.7rem;}
+/* ══ PROGRESS ══ */
+.pbar{height:3px;background:var(--bd);border-radius:2px;
+  margin-bottom:16px;overflow:hidden;}
+.pfill{height:100%;background:var(--pr);border-radius:2px;
+  transition:width 1s linear;
+  box-shadow:0 0 8px rgba(var(--pr-rgb),.6);}
 
-/* ══════════════════════════════════════════════
-   COUNTDOWN
-══════════════════════════════════════════════ */
-.cd-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+/* Big timer display */
+.big-t{
+  font-family:var(--fc);
+  font-size:clamp(2.8rem,8vw,5.5rem);font-weight:700;
+  color:var(--pr);text-shadow:0 0 40px rgba(var(--pr-rgb),.5);
+  text-align:center;font-variant-numeric:tabular-nums;
+  letter-spacing:-.5px;margin-bottom:12px;transition:font-family .3s;
+}
+.tlbl{
+  text-align:center;font-size:.62rem;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--tx2);
+  font-weight:700;margin-bottom:16px;
+}
+.btn-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
+
+/* ══ ALARM PANEL ══ */
+.alarm-list{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+.al-item{
+  display:flex;align-items:center;gap:9px;
+  padding:11px 13px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
+}
+.al-item.on{border-color:rgba(var(--pr-rgb),.35);}
+.al-time{
+  font-family:'Space Mono',monospace;
+  font-size:1.05rem;font-weight:700;
+  color:var(--pr);flex-shrink:0;min-width:80px;
+}
+.al-info{flex:1;}
+.al-label{font-size:.8rem;font-weight:600;color:var(--tx);}
+.al-meta{font-size:.66rem;color:var(--tx2);margin-top:2px;}
+.al-del{background:none;border:none;cursor:pointer;
+  color:var(--tx2);font-size:.9rem;padding:4px;transition:color .2s;}
+.al-del:hover{color:#ff4466;}
+
+/* ══ STOPWATCH ══ */
+.laps{max-height:170px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.lap{
+  display:flex;justify-content:space-between;
+  align-items:center;padding:7px 12px;
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:8px;font-size:.76rem;
+  font-family:'Space Mono',monospace;
+}
+.lap-n{color:var(--tx2);}
+.lap-t{color:var(--pr);font-weight:700;}
+.lap-d{color:var(--tx2);font-size:.68rem;}
+
+/* ══ COUNTDOWN ══ */
+.cd-list{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
 .cd-item{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 14px;background:var(--surface);
-  border:1px solid var(--border);border-radius:12px;
+  display:flex;align-items:center;gap:9px;
+  padding:11px 13px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
 }
-.cd-label{flex:1;font-size:.82rem;font-weight:600;}
-.cd-time{
-  font-family:'Space Mono',monospace;font-size:.88rem;
-  color:var(--primary);font-weight:700;min-width:140px;text-align:right;
+.cd-name{flex:1;font-size:.82rem;font-weight:600;}
+.cd-val{
+  font-family:'Space Mono',monospace;
+  font-size:.8rem;color:var(--pr);font-weight:700;
+  min-width:150px;text-align:right;
 }
-.cd-del{background:none;border:none;cursor:none;color:var(--text-muted);font-size:1rem;padding:4px;transition:color .2s;}
+.cd-del{background:none;border:none;cursor:pointer;
+  color:var(--tx2);transition:color .2s;padding:4px;}
 .cd-del:hover{color:#ff4466;}
 
-/* ══════════════════════════════════════════════
-   CALENDAR
-══════════════════════════════════════════════ */
-.cal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:12px;
+/* ══ WORLD CLOCK ══ */
+.wc-search-wrap{margin-bottom:12px;position:relative;}
+.wc-search-results{
+  position:absolute;top:100%;left:0;right:0;z-index:100;
+  background:var(--bg2);border:1px solid var(--bd);
+  border-radius:10px;margin-top:4px;
+  max-height:200px;overflow-y:auto;
+  display:none;
 }
-.cal-title{font-size:.9rem;font-weight:700;color:var(--text);}
-.cal-nav{
-  background:none;border:1px solid var(--border);
-  border-radius:8px;padding:4px 10px;cursor:none;
-  color:var(--text-muted);font-size:.9rem;transition:all .2s;
+.wc-search-results.show{display:block;}
+.wc-result{
+  padding:9px 14px;cursor:pointer;
+  font-size:.8rem;transition:background .15s;
+  display:flex;justify-content:space-between;
+  border-bottom:1px solid var(--bd);
 }
-.cal-nav:hover{border-color:var(--primary);color:var(--primary);}
-.cal-grid{
-  display:grid;grid-template-columns:repeat(7,1fr);
-  gap:3px;
-}
-.cal-cell{
-  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  border-radius:6px;font-size:.7rem;color:var(--text-muted);
-  font-weight:600;transition:all .2s;cursor:none;
-}
-.cal-cell.day-head{font-size:.6rem;letter-spacing:1px;color:var(--text-muted);opacity:.6;}
-.cal-cell.other-month{opacity:.3;}
-.cal-cell.today{
-  background:var(--primary);color:var(--bg);font-weight:700;
-  box-shadow:0 0 12px rgba(var(--primary-rgb),.5);
-}
-.cal-cell:not(.day-head):not(.today):hover{background:var(--surface2);color:var(--text);}
-
-/* ══════════════════════════════════════════════
-   WORLD CLOCK
-══════════════════════════════════════════════ */
-.world-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.wc-result:last-child{border-bottom:none;}
+.wc-result:hover{background:var(--sf2);}
+.wc-result .wc-r-city{color:var(--tx);font-weight:600;}
+.wc-result .wc-r-country{color:var(--tx2);font-size:.72rem;}
+.world-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;}
 .wc-card{
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--sf);border:1px solid var(--bd);
   border-radius:14px;padding:14px;text-align:center;
+  position:relative;
 }
-.wc-flag{font-size:1.4rem;margin-bottom:6px;}
+.wc-flag{font-size:1.4rem;margin-bottom:5px;}
 .wc-time{
-  font-family:var(--font-clock);font-size:1.4rem;font-weight:700;
-  color:var(--primary);font-variant-numeric:tabular-nums;transition:font-family .3s;
+  font-family:var(--fc);font-size:1.4rem;font-weight:700;
+  color:var(--pr);font-variant-numeric:tabular-nums;
+  transition:font-family .3s;
 }
-.wc-city{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text-muted);margin-top:4px;}
-.wc-date{font-size:.62rem;color:var(--text-muted);margin-top:2px;}
+.wc-city{font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--tx2);margin-top:4px;}
+.wc-date{font-size:.6rem;color:var(--tx2);margin-top:2px;}
+.wc-rem{
+  position:absolute;top:6px;right:7px;
+  background:none;border:none;cursor:pointer;
+  color:var(--tx2);font-size:.75rem;transition:color .2s;
+}
+.wc-rem:hover{color:#ff4466;}
 
-/* ══════════════════════════════════════════════
-   NOTES
-══════════════════════════════════════════════ */
-.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px;}
+/* ══ CALENDAR ══ */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-title{font-size:.88rem;font-weight:700;color:var(--tx);}
+.cal-nav{
+  background:none;border:1px solid var(--bd);
+  border-radius:8px;padding:4px 10px;cursor:pointer;
+  color:var(--tx2);font-size:.9rem;transition:all .2s;
+}
+.cal-nav:hover{border-color:var(--pr);color:var(--pr);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-cell{
+  aspect-ratio:1;display:flex;align-items:center;
+  justify-content:center;border-radius:6px;
+  font-size:.68rem;color:var(--tx2);font-weight:600;
+  cursor:pointer;transition:all .2s;position:relative;flex-direction:column;
+}
+.cal-cell.dh{font-size:.58rem;letter-spacing:.5px;color:var(--tx2);opacity:.55;cursor:default;}
+.cal-cell.om{opacity:.25;}
+.cal-cell.today{background:var(--pr);color:#000;font-weight:700;
+  box-shadow:0 0 12px rgba(var(--pr-rgb),.5);}
+.cal-cell.festival{color:var(--pr);}
+.cal-cell.festival::after{
+  content:'•';position:absolute;bottom:2px;
+  font-size:.4rem;color:var(--pr);
+}
+.cal-cell.today.festival{color:#000;}
+.cal-cell.today.festival::after{color:#000;}
+.cal-cell:not(.dh):not(.today):hover{background:var(--sf2);color:var(--tx);}
+.cal-cell.selected{background:rgba(var(--pr-rgb),.2);color:var(--pr);}
+.festival-info{
+  margin-top:10px;padding:10px 14px;
+  background:rgba(var(--pr-rgb),.08);
+  border:1px solid rgba(var(--pr-rgb),.25);
+  border-radius:10px;font-size:.8rem;color:var(--tx);
+  min-height:36px;
+}
+
+/* ══ AUSPICIOUS TIMES ══ */
+.aus-grid{display:flex;flex-direction:column;gap:7px;}
+.aus-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 13px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:10px;
+}
+.aus-item.now{border-color:rgba(var(--pr-rgb),.5);background:rgba(var(--pr-rgb),.06);}
+.aus-name{font-size:.78rem;font-weight:600;}
+.aus-sub{font-size:.62rem;color:var(--tx2);margin-top:2px;}
+.aus-time{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--pr);font-weight:700;}
+
+/* ══ NOTES ══ */
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:10px;}
 .note-card{
-  background:var(--surface2);border:1px solid var(--border);
+  background:var(--sf2);border:1px solid var(--bd);
   border-radius:12px;padding:12px;position:relative;
-  min-height:90px;font-size:.8rem;color:var(--text);
+  min-height:80px;font-size:.78rem;color:var(--tx);
   line-height:1.5;word-break:break-word;
 }
 .note-del{
   position:absolute;top:6px;right:8px;
-  background:none;border:none;cursor:none;
-  color:var(--text-muted);font-size:.85rem;
-  transition:color .2s;
+  background:none;border:none;cursor:pointer;
+  color:var(--tx2);font-size:.8rem;transition:color .2s;
 }
 .note-del:hover{color:#ff4466;}
-.note-time{
-  font-size:.6rem;color:var(--text-muted);
-  margin-top:8px;letter-spacing:.5px;
-}
+.note-ts{font-size:.58rem;color:var(--tx2);margin-top:8px;}
 
-/* ══════════════════════════════════════════════
-   ACHIEVEMENTS
-══════════════════════════════════════════════ */
-.badge-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;}
+/* ══ MEDICINE ══ */
+.med-list{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+.med-item{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 13px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
+}
+.med-item.taken{opacity:.5;}
+.med-name{flex:1;font-size:.82rem;font-weight:600;}
+.med-time{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--pr);}
+.med-take{
+  padding:4px 12px;border:1px solid var(--pr);
+  border-radius:20px;background:none;cursor:pointer;
+  font-size:.68rem;font-weight:700;color:var(--pr);
+  transition:all .2s;
+}
+.med-take:hover,.med-item.taken .med-take{background:var(--pr);color:#000;}
+.med-del{background:none;border:none;cursor:pointer;
+  color:var(--tx2);padding:4px;transition:color .2s;}
+.med-del:hover{color:#ff4466;}
+
+/* ══ WATER REMINDER ══ */
+.water-track{
+  display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;
+}
+.glass-ico{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--bd);display:flex;
+  align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;transition:all .2s;
+  background:var(--sf);
+}
+.glass-ico.filled{background:rgba(var(--pr-rgb),.2);border-color:var(--pr);}
+.water-status{font-size:.8rem;color:var(--tx2);margin-top:6px;}
+
+/* ══ STUDY PLANNER ══ */
+.subj-list{display:flex;flex-direction:column;gap:7px;margin-top:10px;}
+.subj-item{
+  padding:12px 13px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
+}
+.subj-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.subj-name{flex:1;font-size:.82rem;font-weight:700;}
+.subj-timer{font-family:'Space Mono',monospace;font-size:.9rem;color:var(--pr);font-weight:700;}
+.subj-del{background:none;border:none;cursor:pointer;color:var(--tx2);transition:color .2s;}
+.subj-del:hover{color:#ff4466;}
+.subj-bar{height:4px;background:var(--bd);border-radius:2px;overflow:hidden;}
+.subj-fill{height:100%;background:var(--pr);border-radius:2px;transition:width .3s;}
+.subj-meta{font-size:.65rem;color:var(--tx2);margin-top:5px;
+  display:flex;justify-content:space-between;}
+
+/* ══ AUDIO ══ */
+.noise-grid{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.nbtn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:12px 16px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:14px;
+  cursor:pointer;transition:all .2s;
+  font-family:var(--fu);color:var(--tx2);
+  font-size:.68rem;font-weight:700;min-width:78px;
+}
+.nbtn .ni{font-size:1.3rem;}
+.nbtn.playing{border-color:var(--pr);color:var(--pr);
+  box-shadow:0 0 16px rgba(var(--pr-rgb),.3);}
+.freq-grid{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.fbtn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 14px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
+  cursor:pointer;transition:all .2s;
+  font-family:var(--fu);color:var(--tx2);
+  font-size:.62rem;font-weight:700;min-width:86px;text-align:center;
+}
+.fbtn .fhz{font-size:.9rem;font-weight:800;color:var(--pr);font-family:'Space Mono',monospace;}
+.fbtn.playing{border-color:var(--pr);color:var(--pr);
+  box-shadow:0 0 14px rgba(var(--pr-rgb),.25);}
+
+/* ══ ACHIEVEMENTS ══ */
+.badge-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
 .badge{
   display:flex;flex-direction:column;align-items:center;
-  padding:12px 14px;background:var(--surface);
-  border:1px solid var(--border);border-radius:14px;
-  min-width:90px;text-align:center;transition:all .3s;
-  opacity:.35;filter:grayscale(1);
+  padding:10px 12px;background:var(--sf);
+  border:1px solid var(--bd);border-radius:12px;
+  min-width:80px;text-align:center;transition:all .3s;
+  opacity:.3;filter:grayscale(1);
 }
-.badge.earned{
-  opacity:1;filter:none;
-  border-color:rgba(var(--primary-rgb),.5);
-  box-shadow:0 0 16px rgba(var(--primary-rgb),.25);
-}
-.badge-icon{font-size:1.6rem;margin-bottom:6px;}
-.badge-name{font-size:.62rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);}
+.badge.earned{opacity:1;filter:none;
+  border-color:rgba(var(--pr-rgb),.5);
+  box-shadow:0 0 14px rgba(var(--pr-rgb),.2);}
+.badge-ic{font-size:1.4rem;margin-bottom:4px;}
+.badge-nm{font-size:.58rem;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--tx2);}
 
-/* ══════════════════════════════════════════════
-   STATS CHART
-══════════════════════════════════════════════ */
-.stats-bars{
-  display:flex;align-items:flex-end;gap:5px;
-  height:100px;margin-top:12px;padding:0 4px;
+/* ══ STATS ══ */
+.stat-bars{
+  display:flex;align-items:flex-end;gap:4px;
+  height:80px;margin-top:10px;
 }
-.stat-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
-.stat-bar{
-  width:100%;border-radius:4px 4px 0 0;
-  background:var(--primary);min-height:3px;
-  opacity:.7;transition:height .4s ease;
-  box-shadow:0 0 8px rgba(var(--primary-rgb),.4);
-}
-.stat-bar-lbl{font-size:.55rem;color:var(--text-muted);text-align:center;}
-.stat-info{
-  display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;
-}
+.sbar-w{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sbar{width:100%;border-radius:3px 3px 0 0;
+  background:var(--pr);min-height:3px;opacity:.7;
+  transition:height .4s;box-shadow:0 0 6px rgba(var(--pr-rgb),.4);}
+.sbar-l{font-size:.5rem;color:var(--tx2);text-align:center;}
+.stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
 .stat-kv{display:flex;flex-direction:column;gap:2px;}
-.stat-k{font-size:.58rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);}
-.stat-v{font-size:1.1rem;font-weight:700;color:var(--primary);font-family:'Space Mono',monospace;}
+.stat-k{font-size:.55rem;text-transform:uppercase;letter-spacing:1px;color:var(--tx2);}
+.stat-v{font-size:1.05rem;font-weight:700;color:var(--pr);font-family:'Space Mono',monospace;}
 
-/* ══════════════════════════════════════════════
-   AUDIO PANEL
-══════════════════════════════════════════════ */
-.noise-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-.noise-btn{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  padding:14px 18px;background:var(--surface);
-  border:1px solid var(--border);border-radius:14px;
-  cursor:none;transition:all .2s;font-family:var(--font-ui);
-  color:var(--text-muted);font-size:.72rem;font-weight:700;min-width:80px;
-}
-.noise-btn .ni{font-size:1.4rem;}
-.noise-btn.playing{border-color:var(--primary);color:var(--primary);
-  box-shadow:0 0 16px rgba(var(--primary-rgb),.3);}
-
-/* ══════════════════════════════════════════════
-   POOJA TIMES
-══════════════════════════════════════════════ */
-.pooja-grid{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.pooja-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;background:var(--surface);
-  border:1px solid var(--border);border-radius:10px;
-}
-.pooja-name{font-size:.78rem;font-weight:600;color:var(--text);}
-.pooja-time{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--primary);}
-.pooja-item.active-now{border-color:rgba(var(--primary-rgb),.5);background:rgba(var(--primary-rgb),.06);}
-
-/* ══════════════════════════════════════════════
-   SETTINGS
-══════════════════════════════════════════════ */
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
-.settings-section h3{
-  font-size:.62rem;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text-muted);font-weight:700;margin-bottom:10px;
-}
+/* ══ SETTINGS ══ */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;}
+.set-sec h3{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--tx2);font-weight:700;margin-bottom:10px;}
 .swatches{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;}
 .swatch{
-  width:28px;height:28px;border-radius:50%;cursor:none;
+  width:28px;height:28px;border-radius:50%;cursor:pointer;
   border:2px solid transparent;transition:transform .18s,border-color .18s;
 }
 .swatch:hover{transform:scale(1.2);}
-.swatch.active{border-color:var(--text);}
+.swatch.active{border-color:var(--tx);}
 .font-btns{display:flex;flex-direction:column;gap:6px;}
 .voice-status{
-  font-size:.75rem;color:var(--text-muted);
-  padding:8px 12px;background:var(--surface);
-  border-radius:8px;border:1px solid var(--border);
-  margin-top:8px;min-height:36px;
+  font-size:.75rem;color:var(--tx2);
+  padding:8px 12px;background:var(--sf);
+  border-radius:8px;border:1px solid var(--bd);
+  margin-top:8px;min-height:36px;line-height:1.5;
 }
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:600px){
-  .app{padding:10px 8px 60px;}
-  .clock-card{padding:24px 14px 20px;}
-  .topbar{padding:7px 12px;}
-  .tab{font-size:.55rem;padding:9px 2px;letter-spacing:.3px;}
-  .card{padding:18px 14px;}
-  .settings-grid{grid-template-columns:1fr;}
-}
-@media(orientation:landscape) and (max-height:500px){
-  .clock-card{padding:16px 24px;}
-  .time-main{font-size:clamp(2.5rem,8vh,5rem);}
-}
-
-/* ── NOTIFICATION TOAST ── */
+/* ══ TOAST ══ */
 .toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:var(--surface2);border:1px solid var(--border);
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--sf2);border:1px solid var(--bd);
   border-radius:50px;padding:10px 20px;
-  font-size:.78rem;font-weight:600;color:var(--text);
-  backdrop-filter:blur(20px);z-index:9998;
-  transition:transform .35s ease,opacity .35s;
+  font-size:.76rem;font-weight:600;color:var(--tx);
+  backdrop-filter:blur(20px);z-index:9999;
+  transition:transform .35s,opacity .35s;
   pointer-events:none;opacity:0;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
 }
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ══ KEYBOARD HINT ══ */
+.kshint{
+  position:fixed;bottom:18px;right:18px;z-index:100;
+  background:var(--sf2);border:1px solid var(--bd);
+  border-radius:12px;padding:10px 14px;
+  font-size:.66rem;color:var(--tx2);line-height:2;
+  backdrop-filter:blur(20px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.kshint.show{opacity:1;pointer-events:auto;}
+.kshint kbd{
+  background:var(--sf2);border:1px solid var(--bd);
+  border-radius:4px;padding:1px 5px;
+  font-size:.63rem;font-family:'Space Mono',monospace;color:var(--pr);
+}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:600px){
+  .app{padding:10px 8px 56px;}
+  .clock-card{padding:24px 14px 20px;}
+  .topbar{padding:7px 12px;}
+  .tab{font-size:.54rem;padding:9px 2px;letter-spacing:.2px;}
+  .card{padding:16px 12px;}
+  .g2{grid-template-columns:1fr;}
+  .set-grid{grid-template-columns:1fr;}
+}
+@media(orientation:landscape) and (max-height:500px){
+  .clock-card{padding:14px 22px;}
+  .time-main{font-size:clamp(2.2rem,8vh,4.5rem);}
+}
+
+/* ══ NOTIF PERMISSION BANNER ══ */
+.notif-banner{
+  width:100%;max-width:940px;
+  display:none;
+  padding:10px 16px;
+  background:rgba(var(--pr-rgb),.1);
+  border:1px solid rgba(var(--pr-rgb),.3);
+  border-radius:12px;
+  font-size:.78rem;color:var(--tx);
+  align-items:center;justify-content:space-between;gap:10px;
+  flex-wrap:wrap;
+}
+.notif-banner.show{display:flex;}
+
+/* ══ 24H HINT ══ */
+.h24-hint{
+  font-size:.65rem;color:rgba(var(--pr-rgb),1);
+  margin-top:4px;display:none;
+}
+.h24-hint.show{display:block;}
 </style>
 </head>
-<body class="theme-blue">
+<body class="th-blue">
 
-<!-- Custom Cursor -->
-<div id="cur"></div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Keyboard hint -->
 <div class="kshint" id="kshint">
   <kbd>F</kbd> Fullscreen &nbsp;<kbd>Space</kbd> Play/Pause<br>
-  <kbd>L</kbd> Lap &nbsp;<kbd>R</kbd> Reset &nbsp;<kbd>N</kbd> New Note<br>
-  <kbd>V</kbd> Voice &nbsp;<kbd>?</kbd> Hide hints
+  <kbd>L</kbd> Lap &nbsp;<kbd>R</kbd> Reset<br>
+  <kbd>N</kbd> Note &nbsp;<kbd>V</kbd> Voice &nbsp;<kbd>?</kbd> Hide
 </div>
 
-<canvas id="particle-canvas"></canvas>
-<div id="bg-overlay"></div>
+<canvas id="pcvs"></canvas>
+<div id="bgov"></div>
 
 <div class="app">
 
-<!-- ══ TOP BAR ══ -->
+<!-- ── TOP BAR ── -->
+<div class="notif-banner" id="notif-banner">
+  <span>🔔 Enable notifications for alarms & timer alerts</span>
+  <button class="btn" onclick="askNotif()">Enable Notifications</button>
+</div>
+
 <div class="topbar">
-  <div class="greeting" id="greeting">Good Day, <em>User</em> 👋</div>
-  <div class="topbar-mid" id="quote-pill">Loading quote…</div>
-  <div class="topbar-right">
-    <div class="pill" id="weather-info">⛅ —</div>
-    <div class="pill" id="battery-info"></div>
+  <div class="greeting" id="greeting">Hello, <em>User</em> 👋</div>
+  <div class="topbar-mid" id="quote-pill"></div>
+  <div class="tbar-r">
+    <div class="pill" id="weather-pill">⛅ —</div>
+    <div class="pill" id="battery-pill"></div>
   </div>
 </div>
 
-<!-- ══ CLOCK CARD ══ -->
+<!-- ── CLOCK CARD ── -->
 <div class="clock-card" id="clock-card">
   <div class="mode-sw">
     <button class="mode-btn active" onclick="setMode('digital',this)">Digital</button>
     <button class="mode-btn" onclick="setMode('analog',this)">Analog</button>
-    <button class="mode-btn" onclick="setMode('flip',this)">Flip</button>
   </div>
 
   <!-- Digital -->
-  <div class="digital-wrap show" id="dig-wrap">
+  <div class="dig-wrap show" id="dig-wrap">
     <div class="time-main" id="time-main">00:00:00</div>
-    <div class="ampm" id="ampm" style="display:none">AM</div>
+    <div class="ampm-badge" id="ampm" style="display:none">AM</div>
   </div>
 
-  <!-- Analog SVG -->
-  <div class="analog-wrap" id="ana-wrap">
-    <svg id="analog-svg" width="240" height="240" viewBox="0 0 240 240">
-      <circle class="a-face" cx="120" cy="120" r="116"/>
-      <!-- Ticks generated by JS -->
+  <!-- Analog -->
+  <div class="ana-wrap" id="ana-wrap">
+    <svg id="ana-svg" width="230" height="230" viewBox="0 0 230 230">
+      <circle class="a-face" cx="115" cy="115" r="112"/>
       <g id="a-ticks"></g>
-      <!-- Numbers generated by JS -->
       <g id="a-nums"></g>
-      <!-- Hands -->
-      <line id="a-hr" class="a-hand-h" x1="120" y1="120" x2="120" y2="70" stroke-linecap="round"/>
-      <line id="a-mn" class="a-hand-m" x1="120" y1="120" x2="120" y2="44" stroke-linecap="round"/>
-      <line id="a-sc" class="a-hand-s" x1="120" y1="135" x2="120" y2="38" stroke-linecap="round"/>
-      <circle class="a-center" cx="120" cy="120" r="5"/>
+      <line id="a-hr" class="a-hh" x1="115" y1="115" x2="115" y2="68"/>
+      <line id="a-mn" class="a-mh" x1="115" y1="115" x2="115" y2="42"/>
+      <line id="a-sc" class="a-sh" x1="115" y1="128" x2="115" y2="36"/>
+      <circle class="a-dot" cx="115" cy="115" r="5"/>
     </svg>
-  </div>
-
-  <!-- Flip Clock -->
-  <div class="flip-wrap" id="flip-wrap">
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft0">0</div><div class="flip-half flip-bot" id="fb0">0</div></div>
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft1">0</div><div class="flip-half flip-bot" id="fb1">0</div></div>
-    <div class="flip-sep">:</div>
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft2">0</div><div class="flip-half flip-bot" id="fb2">0</div></div>
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft3">0</div><div class="flip-half flip-bot" id="fb3">0</div></div>
-    <div class="flip-sep">:</div>
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft4">0</div><div class="flip-half flip-bot" id="fb4">0</div></div>
-    <div class="flip-digit-box"><div class="flip-half flip-top" id="ft5">0</div><div class="flip-half flip-bot" id="fb5">0</div></div>
   </div>
 
   <div class="date-line" id="date-line">Loading…</div>
 
   <div class="ctrl-row">
-    <button class="btn" onclick="toggle1224()">12H / 24H</button>
+    <button class="btn" id="btn-1224" onclick="toggle1224()">12H / 24H</button>
     <button class="btn" id="btn-neon" onclick="toggleNeon()">✨ Neon</button>
-    <button class="btn" id="btn-3d" onclick="toggle3D()">🎲 3D Tilt</button>
     <button class="btn" onclick="cycleTheme()">🎨 Color</button>
     <button class="btn" onclick="cycleFont()">Aa Font</button>
     <button class="btn" id="btn-dark" onclick="toggleDark()">☀️ Light</button>
-    <button class="btn" onclick="enterFullscreen()">⛶ Full</button>
+    <button class="btn" onclick="goFull()">⛶ Fullscreen</button>
   </div>
-  <button class="btn active alarm-dismiss-btn" onclick="dismissAlarm()">🔕 Dismiss Alarm</button>
+  <button class="btn active dismiss-btn" onclick="dismissAlarm()">🔕 Dismiss Alarm</button>
 </div>
 
-<!-- ══ TABS ══ -->
+<!-- ── TABS ── -->
 <div class="tabs">
   <button class="tab active" onclick="openTab('alarm',this)">⏰ Alarms</button>
   <button class="tab" onclick="openTab('focus',this)">🍅 Focus</button>
@@ -703,40 +703,40 @@ input[type=range]{width:100%;accent-color:var(--primary);}
   <button class="tab" onclick="openTab('world',this)">🌍 World</button>
   <button class="tab" onclick="openTab('tools',this)">📝 Tools</button>
   <button class="tab" onclick="openTab('audio',this)">🎵 Audio</button>
-  <button class="tab" onclick="openTab('settings',this)">⚙️ Set</button>
+  <button class="tab" onclick="openTab('settings',this)">⚙️ Settings</button>
 </div>
 
-<!-- ══════════ ALARM PANEL ══════════ -->
+<!-- ══════ ALARM ══════ -->
 <div class="panel active" id="panel-alarm">
   <div class="card">
-    <div class="sec-label">Multiple Alarms</div>
-    <div class="alarm-add-form">
-      <input type="time" id="al-time" style="width:130px;flex-shrink:0">
-      <input type="text" id="al-label" placeholder="Label (e.g. Wake up)" style="flex:1;min-width:100px">
-      <select id="al-sound" style="width:130px;flex-shrink:0">
+    <div class="slbl">Add Alarm</div>
+    <div class="input-row">
+      <input type="time" id="al-time" style="max-width:130px">
+      <input type="text" id="al-label" placeholder="Label (e.g. Wake up)">
+      <select id="al-sound" style="max-width:160px">
         <option value="zen">🔔 Zen Bell</option>
         <option value="mechanical">⏰ Mechanical</option>
         <option value="birds">🐦 Birds</option>
-        <option value="digital">📟 Digital</option>
-        <option value="hanuman">🕉️ Hanuman Bell</option>
+        <option value="digital">📟 Digital Beep</option>
+        <option value="custom">📂 Custom Sound</option>
       </select>
-      <button class="btn" onclick="addAlarm()" style="flex-shrink:0">+ Add Alarm</button>
+      <button class="btn" onclick="addAlarm()" style="flex-shrink:0">+ Add</button>
     </div>
+    <div class="h24-hint" id="h24-hint">💡 In 24h mode: type 13:00 for 1 PM, 14:00 for 2 PM, etc.</div>
     <div class="alarm-list" id="alarm-list"></div>
   </div>
 </div>
 
-<!-- ══════════ FOCUS PANEL ══════════ -->
+<!-- ══════ FOCUS ══════ -->
 <div class="panel" id="panel-focus">
-  <div class="grid2">
+  <div class="g2">
     <div class="card">
-      <div class="sec-label">Pomodoro Timer</div>
-      <div class="timer-sub" id="pomo-label">FOCUS SESSION</div>
-      <div class="big-timer" id="pomo-display">25:00</div>
-      <div class="progress-bar"><div class="progress-fill" id="pomo-bar" style="width:100%"></div></div>
-      <div class="btn-row" style="margin-bottom:12px">
-        <button class="btn" onclick="pomoStart()">▶ Start</button>
-        <button class="btn" onclick="pomoPause()">⏸ Pause</button>
+      <div class="slbl">Pomodoro Timer</div>
+      <div class="tlbl" id="pomo-lbl">FOCUS SESSION</div>
+      <div class="big-t" id="pomo-disp">25:00</div>
+      <div class="pbar"><div class="pfill" id="pomo-bar" style="width:100%"></div></div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn" id="pomo-pp" onclick="pomoToggle()">▶ Start</button>
         <button class="btn" onclick="pomoReset()">↺ Reset</button>
       </div>
       <div class="btn-row">
@@ -746,166 +746,212 @@ input[type=range]{width:100%;accent-color:var(--primary);}
       </div>
     </div>
     <div class="card">
-      <div class="sec-label">Stats & Streaks</div>
-      <div class="stat-info">
+      <div class="slbl">Statistics</div>
+      <div class="stat-row">
         <div class="stat-kv"><div class="stat-k">Today</div><div class="stat-v" id="st-today">0</div></div>
-        <div class="stat-kv"><div class="stat-k">Streak</div><div class="stat-v" id="st-streak">🔥 0</div></div>
+        <div class="stat-kv"><div class="stat-k">Streak</div><div class="stat-v" id="st-streak">🔥0</div></div>
         <div class="stat-kv"><div class="stat-k">Total</div><div class="stat-v" id="st-total">0</div></div>
-        <div class="stat-kv"><div class="stat-k">Focus hrs</div><div class="stat-v" id="st-hrs">0h</div></div>
+        <div class="stat-kv"><div class="stat-k">Hours</div><div class="stat-v" id="st-hrs">0h</div></div>
       </div>
-      <div class="stats-bars" id="stats-bars"></div>
-      <div class="divider"></div>
-      <div class="sec-label" style="margin-bottom:8px">Achievements</div>
+      <div class="stat-bars" id="stat-bars"></div>
+      <div class="dvd"></div>
+      <div class="slbl" style="margin-bottom:8px">Achievements</div>
       <div class="badge-grid" id="badge-grid"></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════ TIMERS PANEL ══════════ -->
+<!-- ══════ TIMERS ══════ -->
 <div class="panel" id="panel-timers">
-  <div class="grid2">
+  <div class="g2">
     <!-- Countdown -->
     <div class="card">
-      <div class="sec-label">Countdown Timers</div>
-      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px">
-        <input type="text" id="cd-label-in" placeholder="Event name (e.g. New Year 2027)">
-        <input type="datetime-local" id="cd-date-in">
-        <button class="btn" onclick="addCountdown()">+ Add Countdown</button>
+      <div class="slbl">Countdown Timers</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:8px">
+        <input type="text" id="cd-lbl" placeholder="Event name (e.g. Exam Day)">
+        <input type="datetime-local" id="cd-date">
+        <button class="btn" onclick="addCd()">+ Add Countdown</button>
       </div>
       <div class="cd-list" id="cd-list"></div>
     </div>
     <!-- Stopwatch -->
     <div class="card">
-      <div class="sec-label">Stopwatch</div>
-      <div class="big-timer" id="sw-display">00:00:00.000</div>
-      <div class="btn-row" style="margin-bottom:8px">
-        <button class="btn" onclick="swGo()">▶</button>
-        <button class="btn" onclick="swHalt()">⏸</button>
+      <div class="slbl">Stopwatch</div>
+      <div class="big-t" id="sw-disp">00:00:00.000</div>
+      <div class="btn-row" style="margin-bottom:7px">
+        <button class="btn" id="sw-pp" onclick="swToggle()">▶ Start</button>
         <button class="btn" onclick="swLap()">🏁 Lap</button>
-        <button class="btn" onclick="swClear()">↺</button>
+        <button class="btn" onclick="swClear()">↺ Reset</button>
       </div>
-      <div class="laps-list" id="laps-list"></div>
+      <div class="laps" id="laps"></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════ WORLD PANEL ══════════ -->
+<!-- ══════ WORLD ══════ -->
 <div class="panel" id="panel-world">
-  <div class="grid2">
+  <div class="g2">
     <div class="card">
-      <div class="sec-label">World Clocks</div>
+      <div class="slbl">World Clocks</div>
+      <div class="wc-search-wrap">
+        <input type="text" id="wc-search" placeholder="🔍 Search city, country…" oninput="wcSearch(this.value)" onblur="setTimeout(()=>document.getElementById('wc-res').classList.remove('show'),200)">
+        <div class="wc-search-results" id="wc-res"></div>
+      </div>
       <div class="world-grid" id="world-grid"></div>
     </div>
     <div class="card">
-      <div class="sec-label">Calendar</div>
-      <div class="cal-header">
+      <div class="slbl">Calendar</div>
+      <div class="cal-hdr">
         <button class="cal-nav" onclick="calPrev()">‹</button>
         <div class="cal-title" id="cal-title"></div>
         <button class="cal-nav" onclick="calNext()">›</button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
+      <div class="festival-info" id="festival-info">Tap a date to see festivals 🎉</div>
     </div>
   </div>
-  <div class="card" style="margin-top:12px">
-    <div class="sec-label">🕉️ Pooja & Auspicious Times (Patna, Bihar)</div>
-    <div class="pooja-grid" id="pooja-grid"></div>
+  <div class="card">
+    <div class="slbl">Auspicious Times</div>
+    <div class="aus-grid" id="aus-grid"></div>
   </div>
 </div>
 
-<!-- ══════════ TOOLS PANEL ══════════ -->
+<!-- ══════ TOOLS ══════ -->
 <div class="panel" id="panel-tools">
-  <div class="grid2">
+  <div class="g2">
+    <!-- Notes -->
     <div class="card">
-      <div class="sec-label">📝 Sticky Notes</div>
+      <div class="slbl">📝 Sticky Notes</div>
       <div style="display:flex;gap:7px">
-        <textarea id="note-input" placeholder="Write a note or reminder…" style="flex:1;height:60px;"></textarea>
+        <textarea id="note-in" placeholder="Write a note or reminder…" style="flex:1;height:56px"></textarea>
         <button class="btn" onclick="addNote()" style="align-self:flex-end;flex-shrink:0">+ Add</button>
       </div>
       <div class="notes-grid" id="notes-grid"></div>
     </div>
+    <!-- Voice -->
     <div class="card">
-      <div class="sec-label">🎤 Voice Commands</div>
-      <button class="btn active" id="btn-voice" onclick="toggleVoice()">🎤 Start Listening</button>
-      <div class="voice-status" id="voice-status">Click to activate voice commands</div>
-      <div class="divider"></div>
-      <div class="sec-label">Available Commands:</div>
-      <div style="font-size:.72rem;color:var(--text-muted);line-height:2">
-        🗣 "Set alarm [time]" &nbsp;·&nbsp; "Start stopwatch"<br>
-        🗣 "Stop stopwatch" &nbsp;·&nbsp; "Start focus"<br>
-        🗣 "Stop focus" &nbsp;·&nbsp; "What time is it"<br>
-        🗣 "Next tab" &nbsp;·&nbsp; "Dark mode" &nbsp;·&nbsp; "Fullscreen"
+      <div class="slbl">🎤 Voice Commands</div>
+      <button class="btn" id="btn-voice" onclick="toggleVoice()">🎤 Start Listening</button>
+      <div class="voice-status" id="voice-status">Click to activate. Auto-stops after 5s of silence.</div>
+      <div class="dvd"></div>
+      <div style="font-size:.72rem;color:var(--tx2);line-height:2">
+        🗣 "Set alarm [time]" · "Start/Stop stopwatch"<br>
+        🗣 "Lap" · "Start/Stop focus" · "What time"<br>
+        🗣 "Dark mode" · "Light mode" · "Fullscreen"
       </div>
     </div>
   </div>
-  <div class="card" style="margin-top:12px">
-    <div class="sec-label">💬 Daily Quote</div>
-    <div id="quote-full" style="font-size:.9rem;color:var(--text);line-height:1.7;font-style:italic;padding:8px 0;"></div>
+
+  <!-- Medicine Reminder -->
+  <div class="card">
+    <div class="slbl">💊 Medicine Reminder</div>
+    <div class="input-row">
+      <input type="text" id="med-name" placeholder="Medicine name">
+      <input type="time" id="med-time" style="max-width:130px">
+      <button class="btn" onclick="addMed()" style="flex-shrink:0">+ Add</button>
+    </div>
+    <div class="med-list" id="med-list"></div>
+  </div>
+
+  <!-- Water Reminder -->
+  <div class="card">
+    <div class="slbl">💧 Water Reminder</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <select id="water-interval" style="max-width:160px">
+        <option value="30">Every 30 minutes</option>
+        <option value="45">Every 45 minutes</option>
+        <option value="60" selected>Every 1 hour</option>
+        <option value="90">Every 1.5 hours</option>
+        <option value="120">Every 2 hours</option>
+      </select>
+      <button class="btn" id="water-btn" onclick="toggleWater()">▶ Start Reminder</button>
+      <button class="btn" onclick="resetWater()">↺ Reset</button>
+    </div>
+    <div class="water-track" id="water-track"></div>
+    <div class="water-status" id="water-status">Daily goal: 8 glasses (0/8)</div>
+  </div>
+
+  <!-- Study Planner -->
+  <div class="card">
+    <div class="slbl">📖 Study Planner</div>
+    <div class="input-row">
+      <input type="text" id="subj-name" placeholder="Subject name (e.g. Physics)">
+      <input type="number" id="subj-goal" placeholder="Daily goal (mins)" min="10" max="480" style="max-width:160px">
+      <button class="btn" onclick="addSubj()" style="flex-shrink:0">+ Add</button>
+    </div>
+    <div class="subj-list" id="subj-list"></div>
   </div>
 </div>
 
-<!-- ══════════ AUDIO PANEL ══════════ -->
+<!-- ══════ AUDIO ══════ -->
 <div class="panel" id="panel-audio">
-  <div class="grid2">
+  <div class="g2">
+    <!-- Ambient Sounds -->
     <div class="card">
-      <div class="sec-label">🌧️ White Noise / Focus Sounds</div>
-      <div class="noise-grid">
-        <button class="noise-btn" id="noise-rain" onclick="playNoise('rain',this)">
-          <span class="ni">🌧️</span>Rain
-        </button>
-        <button class="noise-btn" id="noise-ocean" onclick="playNoise('ocean',this)">
-          <span class="ni">🌊</span>Ocean
-        </button>
-        <button class="noise-btn" id="noise-forest" onclick="playNoise('forest',this)">
-          <span class="ni">🌲</span>Forest
-        </button>
-        <button class="noise-btn" id="noise-fire" onclick="playNoise('fire',this)">
-          <span class="ni">🔥</span>Campfire
-        </button>
-        <button class="noise-btn" id="noise-off" onclick="stopNoise()">
-          <span class="ni">🔇</span>Stop
-        </button>
+      <div class="slbl">🌧️ Ambient & Spiritual Sounds</div>
+      <div class="noise-grid" id="noise-grid">
+        <button class="nbtn" onclick="playNoise('rain',this)"><span class="ni">🌧️</span>Rain</button>
+        <button class="nbtn" onclick="playNoise('forest',this)"><span class="ni">🌲</span>Forest</button>
+        <button class="nbtn" onclick="playNoise('om',this)"><span class="ni">🕉️</span>Om Chant</button>
+        <button class="nbtn" onclick="playNoise('ram',this)"><span class="ni">🙏</span>Ram Chant</button>
+        <button class="nbtn" onclick="playNoise('birds',this)"><span class="ni">🐦</span>Birds</button>
+        <button class="nbtn" onclick="playNoise('morning',this)"><span class="ni">🌅</span>Morning</button>
+        <button class="nbtn" onclick="playNoise('meditation',this)"><span class="ni">🧘</span>Meditation</button>
+        <button class="nbtn" onclick="stopNoise()"><span class="ni">🔇</span>Stop</button>
       </div>
-      <div class="divider"></div>
-      <div class="sec-label">Master Volume</div>
+      <div class="dvd"></div>
+      <div class="slbl">Volume</div>
       <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:.75rem">🔈</span>
-        <input type="range" id="vol-slider" min="0" max="1" step=".05" value=".7" oninput="setVolume(this.value)">
-        <span style="font-size:.75rem" id="vol-pct">70%</span>
+        <span>🔈</span>
+        <input type="range" id="vol-sl" min="0" max="1" step=".05" value=".7" oninput="setVol(this.value)">
+        <span id="vol-pct" style="font-size:.75rem;min-width:32px">70%</span>
       </div>
     </div>
+
+    <!-- Frequency Tones -->
     <div class="card">
-      <div class="sec-label">📂 Custom Alarm Sound</div>
-      <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px">Upload your own MP3/WAV for alarms</p>
-      <input type="file" id="custom-audio-file" accept="audio/*" onchange="loadCustomAudio(this)" style="font-size:.75rem;background:var(--surface);border:1px dashed var(--border);border-radius:10px;padding:10px">
-      <div id="custom-audio-name" style="font-size:.72rem;color:var(--text-muted);margin-top:8px;"></div>
-      <button class="btn" onclick="testCustomAudio()" style="margin-top:8px">▶ Test Sound</button>
-      <div class="divider"></div>
-      <div class="sec-label">🎵 Lo-Fi Focus Radio</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" onclick="openLofi('lofi')">🎧 Lo-Fi Hip Hop</button>
-        <button class="btn" onclick="openLofi('jazz')">🎷 Jazz Radio</button>
+      <div class="slbl">🎵 Focus Frequency Tones</div>
+      <p style="font-size:.72rem;color:var(--tx2);margin-bottom:8px">Scientifically-proven frequencies for studying & focus</p>
+      <div class="freq-grid" id="freq-grid">
+        <button class="fbtn" onclick="playFreq(40,this)"><span class="fhz">40Hz</span>Gamma<br><span style="font-size:.55rem;color:var(--tx2)">Focus & Memory</span></button>
+        <button class="fbtn" onclick="playFreq(10,this)"><span class="fhz">10Hz</span>Alpha<br><span style="font-size:.55rem;color:var(--tx2)">Relaxed Focus</span></button>
+        <button class="fbtn" onclick="playFreq(6,this)"><span class="fhz">6Hz</span>Theta<br><span style="font-size:.55rem;color:var(--tx2)">Deep Study</span></button>
+        <button class="fbtn" onclick="playFreq(432,this)"><span class="fhz">432Hz</span>Healing<br><span style="font-size:.55rem;color:var(--tx2)">Stress Relief</span></button>
+        <button class="fbtn" onclick="playFreq(528,this)"><span class="fhz">528Hz</span>Solfeggio<br><span style="font-size:.55rem;color:var(--tx2)">Clarity & DNA</span></button>
+        <button class="fbtn" onclick="playFreq(963,this)"><span class="fhz">963Hz</span>Crown<br><span style="font-size:.55rem;color:var(--tx2)">Higher Mind</span></button>
+        <button class="fbtn" onclick="stopFreq()"><span class="fhz" style="color:var(--tx2)">■</span>Stop<br><span style="font-size:.55rem;color:var(--tx2)">All Tones</span></button>
       </div>
     </div>
   </div>
+
+  <!-- Custom Alarm Sound -->
+  <div class="card">
+    <div class="slbl">📂 Custom Alarm Sound</div>
+    <p style="font-size:.74rem;color:var(--tx2);margin-bottom:10px">Upload your own MP3/WAV — it will be used when "Custom Sound" is selected in alarms</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input type="file" id="custom-audio" accept="audio/*" onchange="loadCustomAudio(this)" style="font-size:.74rem;flex:1">
+      <button class="btn" onclick="testCustom()">▶ Test</button>
+    </div>
+    <div id="custom-name" style="font-size:.7rem;color:var(--tx2);margin-top:6px"></div>
+  </div>
 </div>
 
-<!-- ══════════ SETTINGS PANEL ══════════ -->
+<!-- ══════ SETTINGS ══════ -->
 <div class="panel" id="panel-settings">
   <div class="card">
-    <div class="sec-label">Customization</div>
-    <div class="settings-grid">
-      <div class="settings-section">
+    <div class="slbl">Customization</div>
+    <div class="set-grid">
+      <div class="set-sec">
         <h3>Accent Color</h3>
         <div class="swatches">
-          <div class="swatch active" style="background:#00d4ff" onclick="setTheme('blue',this)"></div>
-          <div class="swatch" style="background:#ff2d7a" onclick="setTheme('pink',this)"></div>
-          <div class="swatch" style="background:#00ffaa" onclick="setTheme('green',this)"></div>
-          <div class="swatch" style="background:#ffd200" onclick="setTheme('yellow',this)"></div>
-          <div class="swatch" style="background:#c070ff" onclick="setTheme('purple',this)"></div>
-          <div class="swatch" style="background:#ff6b35" onclick="setTheme('orange',this)"></div>
+          <div class="swatch active" style="background:#00d4ff" onclick="setTheme('th-blue',this)" title="Blue"></div>
+          <div class="swatch" style="background:#ff0080" onclick="setTheme('th-pink',this)" title="Pink"></div>
+          <div class="swatch" style="background:#00ff88" onclick="setTheme('th-green',this)" title="Green"></div>
+          <div class="swatch" style="background:#ffcc00" onclick="setTheme('th-yellow',this)" title="Yellow"></div>
+          <div class="swatch" style="background:#bf5fff" onclick="setTheme('th-purple',this)" title="Purple"></div>
         </div>
       </div>
-      <div class="settings-section">
+      <div class="set-sec">
         <h3>Clock Font</h3>
         <div class="font-btns">
           <button class="btn active" id="fb-digital" onclick="setFont('digital',this)">Digital / LED</button>
@@ -913,239 +959,204 @@ input[type=range]{width:100%;accent-color:var(--primary);}
           <button class="btn" id="fb-serif" onclick="setFont('serif',this)">Classic Serif</button>
         </div>
       </div>
-      <div class="settings-section">
-        <h3>Background</h3>
+      <div class="set-sec">
+        <h3>Background Image</h3>
         <div style="display:flex;flex-direction:column;gap:7px">
           <input type="text" id="bg-url" placeholder="Paste image URL…">
-          <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <div style="display:flex;gap:7px">
             <button class="btn" onclick="applyBg()">Apply URL</button>
-            <button class="btn" onclick="randBg()">🌄 Random</button>
             <button class="btn" onclick="clearBg()">✕ Clear</button>
           </div>
         </div>
       </div>
-      <div class="settings-section">
-        <h3>Display</h3>
+      <div class="set-sec">
+        <h3>Display Options</h3>
         <div style="display:flex;flex-direction:column;gap:10px">
           <label class="tog" onclick="toggleDark()">
-            <div class="tog-track" id="trk-dark"><div class="tog-thumb"></div></div>
-            <span class="tog-lbl">Light Mode</span>
+            <div class="tog-tr" id="trk-dark"><div class="tog-th"></div></div>
+            <span class="tog-lb">Light Mode</span>
           </label>
           <label class="tog" onclick="toggleParticles()">
-            <div class="tog-track on" id="trk-particles"><div class="tog-thumb"></div></div>
-            <span class="tog-lbl">Particle Field</span>
+            <div class="tog-tr on" id="trk-ptcl"><div class="tog-th"></div></div>
+            <span class="tog-lb">Particle Background</span>
           </label>
           <label class="tog" onclick="toggleChime()">
-            <div class="tog-track on" id="trk-chime"><div class="tog-thumb"></div></div>
-            <span class="tog-lbl">Hourly Chime</span>
-          </label>
-          <label class="tog" onclick="toggleCursor()">
-            <div class="tog-track on" id="trk-cursor"><div class="tog-thumb"></div></div>
-            <span class="tog-lbl">Custom Cursor</span>
+            <div class="tog-tr on" id="trk-chime"><div class="tog-th"></div></div>
+            <span class="tog-lb">Hourly Chime</span>
           </label>
         </div>
       </div>
     </div>
-    <div class="divider"></div>
-    <div class="sec-label">PWA — Install as App</div>
-    <button class="btn" id="install-btn" style="display:none" onclick="installPWA()">📱 Install CHRONO on Device</button>
-    <p style="font-size:.72rem;color:var(--text-muted)">Open in Chrome/Edge and tap "Install" in browser menu to use offline as a desktop/mobile app.</p>
-    <div class="divider"></div>
+    <div class="dvd"></div>
+    <div class="slbl">App & Data</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="install-btn" style="display:none" onclick="installPWA()">📱 Install App</button>
       <button class="btn" onclick="exportData()">📤 Export Data</button>
       <button class="btn" onclick="importData()">📥 Import Data</button>
-      <button class="btn" onclick="resetAll()">🗑️ Reset All</button>
-      <button class="btn" id="btn-kshint" onclick="document.getElementById('kshint').classList.toggle('show')">⌨️ Shortcuts</button>
+      <button class="btn danger" onclick="resetAll()">🗑️ Reset All</button>
+      <button class="btn" onclick="document.getElementById('kshint').classList.toggle('show')">⌨️ Shortcuts</button>
     </div>
   </div>
 </div>
 
 </div><!-- .app -->
 <script>
-/* ════════════════════════════════════════════
-   CHRONO ULTRA — Complete App JS
-════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   CHRONO ULTRA v3 — Complete JS
+════════════════════════════════════════ */
 
-// ── STATE ────────────────────────────────────
+// ── STATE ────────────────────────────
 let S = {
-  is24h:false, isDark:true, theme:'blue', font:'digital',
-  clockMode:'digital', neon:false, tilt3d:false,
-  particles:true, chime:true, customCursor:true,
+  is24h:false, isDark:true, theme:'th-blue', font:'digital',
+  clockMode:'digital', neon:false,
+  particles:true, chime:true,
   alarms:[], countdowns:[],
-  pomoTotal:25*60, pomoLeft:25*60, pomoCycle:'focus',
-  pomoStreak:0, pomoLastDate:null, pomoTotalSessions:0,
-  pomoHistory:[], // [{date,count}]
-  swElapsed:0,
-  laps:[],
-  notes:[],
+  pomoTotal:25*60, pomoLeft:25*60,
+  pomoRunning:false,
+  pomoStreak:0, pomoLastDate:null,
+  pomoSessions:0, pomoHistory:[],
+  swElapsed:0, lapList:[],
+  notes:[], medicines:[], subjects:[],
+  waterCount:0, waterOn:false,
+  waterInterval:60,
   achievements:{},
-  masterVolume:.7,
+  volume:.7,
+  selectedZones:['UTC','America/New_York','Europe/London','Asia/Tokyo','Asia/Kolkata','Asia/Dubai'],
   calMonth:null, calYear:null,
-  customAudioData:null,
 };
 
-let audioCtx=null, noiseSource=null, alarmRinging=false, alarmLoopId=null;
-let lastChimeHour=-1, lastFlipDigits=['','','','','',''];
-let pomoRunning=false, pomoTick=null;
+let audioCtx=null, noiseNode=null, freqNode=null, noiseGain=null, freqGain=null;
+let customAudioBuf=null;
+let alarmRinging=false, alarmLoopId=null, alarmStart=0;
+let lastChimeH=-1;
+let pomoTick=null;
 let swRunning=false, swRef=0, swTick=null;
-let voiceOn=false, recognition=null;
+let voiceOn=false, recognition=null, voiceSilTimer=null;
+let waterTimer=null;
 let deferredInstall=null;
 let tabIdx=0;
-
 const TABS=['alarm','focus','timers','world','tools','audio','settings'];
 
-// ── STORAGE ──────────────────────────────────
-function save(){try{localStorage.setItem('chronoU2',JSON.stringify(S));}catch(e){}}
+// Active study subject
+let activeSubj=null, subjTick=null;
+
+// ── STORAGE ──────────────────────────
+function save(){try{localStorage.setItem('chU3',JSON.stringify(S));}catch(e){}}
 function load(){
   try{
-    const d=JSON.parse(localStorage.getItem('chronoU2')||'{}');
-    // deep merge
-    Object.keys(d).forEach(k=>{if(k in S)S[k]=d[k];});
+    const d=JSON.parse(localStorage.getItem('chU3')||'{}');
+    for(const k in d){if(k in S)S[k]=d[k];}
   }catch(e){}
 }
 
-// ── AUDIO CONTEXT ────────────────────────────
-function getAudio(){
+// ── AUDIO ────────────────────────────
+function ac(){
   if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(audioCtx.state==='suspended')audioCtx.resume();
   return audioCtx;
 }
 
-// ── MAIN TICK ────────────────────────────────
+// ── NOTIFICATIONS ────────────────────
+async function askNotif(){
+  if(!('Notification' in window))return;
+  const r=await Notification.requestPermission();
+  document.getElementById('notif-banner').classList.remove('show');
+  if(r==='granted')toast('🔔 Notifications enabled!');
+}
+function notify(title,body){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const n=new Notification(title,{
+    body,
+    icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏱</text></svg>',
+    vibrate:[200,100,200],
+    requireInteraction:false
+  });
+  setTimeout(()=>n.close(),8000);
+}
+
+// ── MAIN TICK ────────────────────────
 function tick(){
   const now=new Date();
   const H=now.getHours(),M=now.getMinutes(),Sec=now.getSeconds();
-  let h=H, suffix='';
+  let h=H,suffix='';
   if(!S.is24h){suffix=H>=12?'PM':'AM';h=H%12||12;}
-
-  // Digital
-  const timeStr=`${p2(h)}:${p2(M)}:${p2(Sec)}`;
-  document.getElementById('time-main').textContent=timeStr;
+  document.getElementById('time-main').textContent=`${p2(h)}:${p2(M)}:${p2(Sec)}`;
   const amEl=document.getElementById('ampm');
   if(!S.is24h){amEl.style.display='';amEl.textContent=suffix;}
   else amEl.style.display='none';
-
-  // Date
   document.getElementById('date-line').textContent=
     now.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-  // Analog
   updateAnalog(H,M,Sec);
-
-  // Flip
-  updateFlip(h,M,Sec);
-
-  // World clocks
   updateWorld(now);
-
-  // Greeting
-  const greets=[[5,'Burning midnight oil 🌙'],[12,'Good Morning ☀️'],[17,'Good Afternoon 🌤'],[21,'Good Evening 🌆'],[24,'Good Night 🌙']];
-  const g=greets.find(([t])=>H<t)||greets[greets.length-1];
-  document.getElementById('greeting').innerHTML=`${g[1]}, <em>User</em>`;
-
-  // Alarm check
   checkAlarms(H,M,Sec);
-
-  // Hourly chime
-  if(S.chime&&H!==lastChimeHour&&M===0&&Sec===0){lastChimeHour=H;zenBell(.4);}
-
-  // Countdown update
-  updateCountdowns();
-
-  // Pooja times
-  if(Sec===0)renderPooja();
+  if(S.chime&&H!==lastChimeH&&M===0&&Sec===0){lastChimeH=H;zenBell(.35);}
+  // Greeting
+  const gmap=[[5,'Burning midnight oil 🌙'],[12,'Good Morning ☀️'],[17,'Good Afternoon 🌤'],[21,'Good Evening 🌆'],[24,'Good Night 🌙']];
+  const g=gmap.find(([t])=>H<t)||gmap[gmap.length-1];
+  document.getElementById('greeting').innerHTML=`${g[1]}, <em>User</em>`;
+  // Medicine check
+  checkMedicines(H,M,Sec);
+  // Water reminder ongoing notification
+  if(Sec===0)renderAus();
 }
-
 function p2(n){return String(n).padStart(2,'0');}
 
-// ── ANALOG CLOCK ─────────────────────────────
+// ── ANALOG CLOCK ─────────────────────
 function buildAnalog(){
   const tg=document.getElementById('a-ticks');
   const ng=document.getElementById('a-nums');
-  tg.innerHTML=''; ng.innerHTML='';
+  tg.innerHTML='';ng.innerHTML='';
   for(let i=0;i<60;i++){
-    const ang=(i/60)*360;
-    const r=ang*Math.PI/180;
-    const hr=(i%5===0);
-    const r1=hr?95:105, r2=hr?110:110;
-    const x1=120+r1*Math.sin(r), y1=120-r1*Math.cos(r);
-    const x2=120+r2*Math.sin(r), y2=120-r2*Math.cos(r);
-    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',x1);line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2);line.setAttribute('y2',y2);
-    line.setAttribute('class',hr?'a-tick a-tick-hr':'a-tick');
-    tg.appendChild(line);
+    const a=(i/60)*2*Math.PI;
+    const hr=i%5===0;
+    const r1=hr?93:103,r2=107;
+    const x1=115+r1*Math.sin(a),y1=115-r1*Math.cos(a);
+    const x2=115+r2*Math.sin(a),y2=115-r2*Math.cos(a);
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',x1);l.setAttribute('y1',y1);
+    l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('class',hr?'a-tick a-tick-h':'a-tick');
+    tg.appendChild(l);
   }
   for(let i=1;i<=12;i++){
-    const ang=((i/12)*360)*Math.PI/180;
-    const r=80;
-    const x=120+r*Math.sin(ang), y=120-r*Math.cos(ang)+4;
+    const a=(i/12)*2*Math.PI;
+    const r=78,x=115+r*Math.sin(a),y=115-r*Math.cos(a)+4;
     const t=document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x',x);t.setAttribute('y',y);
-    t.setAttribute('class','a-num');
-    t.setAttribute('text-anchor','middle');
-    t.textContent=i;
-    ng.appendChild(t);
+    t.setAttribute('class','a-num');t.setAttribute('text-anchor','middle');
+    t.textContent=i;ng.appendChild(t);
   }
 }
-
 function updateAnalog(H,M,Sec){
-  const secAngle=Sec*6;
-  const minAngle=M*6+Sec*.1;
-  const hrAngle=(H%12)*30+M*.5;
-  rot('a-hr',hrAngle);rot('a-mn',minAngle);rot('a-sc',secAngle);
+  const rot=(id,deg)=>{
+    const el=document.getElementById(id);
+    if(el)el.setAttribute('transform',`rotate(${deg},115,115)`);
+  };
+  rot('a-hr',(H%12)*30+M*.5);
+  rot('a-mn',M*6+Sec*.1);
+  rot('a-sc',Sec*6);
 }
-
-function rot(id,deg){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.setAttribute('transform',`rotate(${deg},120,120)`);
-}
-
-// ── FLIP CLOCK ───────────────────────────────
-function updateFlip(h,m,s){
-  const digits=[...p2(h),...p2(m),...p2(s)];
-  digits.forEach((d,i)=>{
-    if(d!==lastFlipDigits[i]){
-      const top=document.getElementById('ft'+i);
-      const bot=document.getElementById('fb'+i);
-      if(!top||!bot)return;
-      top.textContent=d;bot.textContent=d;
-      top.classList.add('flip-anim');
-      setTimeout(()=>top.classList.remove('flip-anim'),400);
-      lastFlipDigits[i]=d;
-    }
-  });
-}
-
-// ── CLOCK MODE ───────────────────────────────
 function setMode(m,btn){
   S.clockMode=m;
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('dig-wrap').classList.toggle('show',m==='digital');
   document.getElementById('ana-wrap').classList.toggle('show',m==='analog');
-  document.getElementById('flip-wrap').classList.toggle('show',m==='flip');
   save();
 }
 
-// ── TOGGLES ──────────────────────────────────
-function toggle1224(){S.is24h=!S.is24h;save();toast(S.is24h?'24-Hour Mode':'12-Hour Mode');}
-
+// ── TOGGLES ──────────────────────────
+function toggle1224(){
+  S.is24h=!S.is24h;
+  document.getElementById('h24-hint').classList.toggle('show',S.is24h);
+  save();toast(S.is24h?'24-Hour Mode':'12-Hour Mode');
+}
 function toggleNeon(){
   S.neon=!S.neon;
   document.getElementById('time-main').classList.toggle('neon',S.neon);
   document.getElementById('btn-neon').classList.toggle('active',S.neon);
-  save();toast(S.neon?'Neon ON ✨':'Neon OFF');
+  save();
 }
-
-function toggle3D(){
-  S.tilt3d=!S.tilt3d;
-  document.getElementById('clock-card').classList.toggle('tilt-3d',S.tilt3d);
-  document.getElementById('btn-3d').classList.toggle('active',S.tilt3d);
-  save();toast(S.tilt3d?'3D Tilt ON':'3D Tilt OFF');
-}
-
 function toggleDark(){
   S.isDark=!S.isDark;applyDark();save();
 }
@@ -1154,313 +1165,449 @@ function applyDark(){
   document.getElementById('btn-dark').textContent=S.isDark?'☀️ Light':'🌙 Dark';
   document.getElementById('trk-dark').classList.toggle('on',!S.isDark);
 }
-
 function toggleParticles(){
   S.particles=!S.particles;
-  document.getElementById('trk-particles').classList.toggle('on',S.particles);
+  document.getElementById('trk-ptcl').classList.toggle('on',S.particles);
   save();
 }
-
 function toggleChime(){
   S.chime=!S.chime;
   document.getElementById('trk-chime').classList.toggle('on',S.chime);
   save();
 }
-
-function toggleCursor(){
-  S.customCursor=!S.customCursor;
-  document.getElementById('cur').style.display=S.customCursor?'':'none';
-  document.getElementById('trk-cursor').classList.toggle('on',S.customCursor);
-  save();
-}
-
-// ── THEMES ───────────────────────────────────
-const THEMES=['blue','pink','green','yellow','purple','orange'];
-let themeIdx=0;
-function cycleTheme(){themeIdx=(themeIdx+1)%THEMES.length;setTheme(THEMES[themeIdx],null);}
-function setTheme(name,swEl){
-  S.theme=name;themeIdx=THEMES.indexOf(name);
-  document.body.className=document.body.className.replace(/theme-\w+/,'')+(S.isDark?'':' light')+' theme-'+name;
-  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
-  if(swEl)swEl.classList.add('active');
-  else document.querySelectorAll('.swatch').forEach(s=>{if(s.getAttribute('onclick').includes(name))s.classList.add('active');});
-  save();
-}
-
-// ── FONTS ────────────────────────────────────
-const FONTS={digital:"'Orbitron',monospace",mono:"'Space Mono',monospace",serif:"'Playfair Display',serif"};
-const FKEYS=Object.keys(FONTS);let fontIdx=0;
-function cycleFont(){fontIdx=(fontIdx+1)%FKEYS.length;setFont(FKEYS[fontIdx],null);}
-function setFont(name,btn){
-  S.font=name;fontIdx=FKEYS.indexOf(name);
-  document.documentElement.style.setProperty('--font-clock',FONTS[name]);
-  document.querySelectorAll('[id^="fb-"]').forEach(b=>b.classList.remove('active'));
-  const el=document.getElementById('fb-'+name);if(el)el.classList.add('active');
-  save();
-}
-
-// ── FULLSCREEN ───────────────────────────────
-function enterFullscreen(){
+function goFull(){
   if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
   else document.exitFullscreen();
 }
 
-// ══════════════════════════════════════════════
-// MULTIPLE ALARMS
-// ══════════════════════════════════════════════
-function addAlarm(){
-  const t=document.getElementById('al-time').value;
-  if(!t)return;
-  const lbl=document.getElementById('al-label').value||'Alarm';
-  const snd=document.getElementById('al-sound').value;
-  S.alarms.push({id:Date.now(),time:t,label:lbl,sound:snd,enabled:true});
-  save();renderAlarms();
-  checkAchieve('alarm_set');
-  toast(`⏰ Alarm set for ${fmtAlarmTime(t)}`);
-  if(t.split(':')[0]<'06')checkAchieve('early_bird');
-  if(t.split(':')[0]>='23')checkAchieve('night_owl');
+// ── THEMES ───────────────────────────
+const THEMES=['th-blue','th-pink','th-green','th-yellow','th-purple'];
+let thIdx=0;
+function cycleTheme(){thIdx=(thIdx+1)%THEMES.length;setTheme(THEMES[thIdx],null);}
+function setTheme(name,sw){
+  S.theme=name;thIdx=THEMES.indexOf(name);
+  document.body.className=document.body.className
+    .replace(/th-\w+/,'')+(S.isDark?'':' light')+' '+name;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+  if(sw)sw.classList.add('active');
+  else document.querySelectorAll('.swatch').forEach(s=>{
+    if(s.getAttribute('onclick').includes(name))s.classList.add('active');
+  });
+  save();
 }
 
+// ── FONTS ────────────────────────────
+const FONTS={digital:"'Orbitron',monospace",mono:"'Space Mono',monospace",serif:"'Playfair Display',serif"};
+const FKEYS=Object.keys(FONTS);let fIdx=0;
+function cycleFont(){fIdx=(fIdx+1)%FKEYS.length;setFont(FKEYS[fIdx],null);}
+function setFont(name,btn){
+  S.font=name;fIdx=FKEYS.indexOf(name);
+  document.documentElement.style.setProperty('--fc',FONTS[name]);
+  document.querySelectorAll('[id^=fb-]').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('fb-'+name);if(el)el.classList.add('active');
+  save();
+}
+
+// ── ALARMS ───────────────────────────
+function addAlarm(){
+  const t=document.getElementById('al-time').value;if(!t)return;
+  const lbl=document.getElementById('al-label').value||'Alarm';
+  const snd=document.getElementById('al-sound').value;
+  S.alarms.push({id:Date.now(),time:t,label:lbl,sound:snd,enabled:true,taken:false});
+  document.getElementById('al-label').value='';
+  save();renderAlarms();
+  checkAch('alarm_set');
+  const [ah]=t.split(':');
+  if(parseInt(ah)<6)checkAch('early_bird');
+  if(parseInt(ah)>=23)checkAch('night_owl');
+  toast(`⏰ Alarm set for ${fmtTime(t)}`);
+  haptic();
+}
 function toggleAlarm(id){
   const a=S.alarms.find(x=>x.id===id);
   if(a){a.enabled=!a.enabled;save();renderAlarms();}
 }
-
-function deleteAlarm(id){
-  S.alarms=S.alarms.filter(x=>x.id!==id);
-  save();renderAlarms();
+function delAlarm(id){
+  S.alarms=S.alarms.filter(x=>x.id!==id);save();renderAlarms();
 }
-
-function renderAlarms(){
-  const el=document.getElementById('alarm-list');
-  if(!S.alarms.length){el.innerHTML='<p style="font-size:.75rem;color:var(--text-muted);padding:8px">No alarms set.</p>';return;}
-  el.innerHTML=S.alarms.map(a=>`
-    <div class="alarm-item ${a.enabled?'on':''}">
-      <div class="ai-time">${fmtAlarmTime(a.time)}</div>
-      <div style="flex:1">
-        <div style="font-size:.82rem;font-weight:600">${a.label}</div>
-        <div class="ai-sound">${a.sound} ${a.enabled?'🟢':'⚫'}</div>
-      </div>
-      <label class="tog" onclick="toggleAlarm(${a.id})">
-        <div class="tog-track ${a.enabled?'on':''}"><div class="tog-thumb"></div></div>
-      </label>
-      <button class="ai-del" onclick="deleteAlarm(${a.id})">✕</button>
-    </div>`).join('');
-}
-
-function fmtAlarmTime(t){
+function fmtTime(t){
   if(S.is24h)return t;
   const [h,m]=t.split(':').map(Number);
-  return `${h%12||12}:${p2(m)} ${h>=12?'PM':'AM'}`;
+  return`${h%12||12}:${p2(m)} ${h>=12?'PM':'AM'}`;
 }
-
+function renderAlarms(){
+  const el=document.getElementById('alarm-list');
+  if(!S.alarms.length){
+    el.innerHTML='<p style="font-size:.75rem;color:var(--tx2);padding:6px">No alarms set.</p>';return;
+  }
+  el.innerHTML=S.alarms.map(a=>`
+    <div class="al-item ${a.enabled?'on':''}">
+      <div class="al-time">${fmtTime(a.time)}</div>
+      <div class="al-info">
+        <div class="al-label">${a.label}</div>
+        <div class="al-meta">${a.sound} · ${a.enabled?'Active 🟢':'Off ⚫'}</div>
+      </div>
+      <label class="tog" onclick="toggleAlarm(${a.id})">
+        <div class="tog-tr ${a.enabled?'on':''}"><div class="tog-th"></div></div>
+      </label>
+      <button class="al-del" onclick="delAlarm(${a.id})">✕</button>
+    </div>`).join('');
+}
 function checkAlarms(H,M,Sec){
   if(Sec!==0||alarmRinging)return;
   S.alarms.filter(a=>a.enabled).forEach(a=>{
     const [ah,am]=a.time.split(':').map(Number);
-    if(H===ah&&M===am)ringAlarm(a.sound);
+    if(H===ah&&M===am){
+      ringAlarm(a.sound);
+      notify('⏰ ALARM — '+a.label,`Time: ${fmtTime(a.time)}`);
+    }
   });
 }
-
-let alarmStartTime=null;
 function ringAlarm(snd){
-  alarmRinging=true;alarmStartTime=Date.now();
-  document.getElementById('clock-card').classList.add('alarm-ringing');
-  playAlarm(snd);
-  alarmLoopId=setInterval(()=>playAlarm(snd),3500);
+  alarmRinging=true;alarmStart=Date.now();
+  document.getElementById('clock-card').classList.add('alarm-ring');
+  playAlarmSound(snd);
+  alarmLoopId=setInterval(()=>playAlarmSound(snd),3500);
   setTimeout(dismissAlarm,120000);
+  haptic(500);
 }
 function dismissAlarm(){
-  const elapsed=alarmStartTime?Date.now()-alarmStartTime:9999;
-  if(elapsed<5000)checkAchieve('punctual');
+  if(Date.now()-alarmStart<5000)checkAch('punctual');
   alarmRinging=false;clearInterval(alarmLoopId);
-  document.getElementById('clock-card').classList.remove('alarm-ringing');
-  alarmStartTime=null;
+  document.getElementById('clock-card').classList.remove('alarm-ring');
 }
 
-// ══════════════════════════════════════════════
-// COUNTDOWN TIMERS
-// ══════════════════════════════════════════════
-function addCountdown(){
-  const lbl=document.getElementById('cd-label-in').value||'Event';
-  const dt=document.getElementById('cd-date-in').value;
-  if(!dt)return;
-  S.countdowns.push({id:Date.now(),label:lbl,target:new Date(dt).getTime()});
-  save();renderCountdowns();toast(`⏳ Countdown added: ${lbl}`);
-}
-
-function deleteCountdown(id){S.countdowns=S.countdowns.filter(x=>x.id!==id);save();renderCountdowns();}
-
-function updateCountdowns(){
-  const el=document.getElementById('cd-list');
-  if(!el)return;
-  const now=Date.now();
-  S.countdowns.forEach(c=>{
-    const rem=c.target-now;
-    const el2=document.getElementById('cd-'+c.id);
-    if(!el2)return;
-    if(rem<=0){el2.textContent='🎉 Time is up!';return;}
-    const d=Math.floor(rem/86400000),h=Math.floor((rem%86400000)/3600000);
-    const m=Math.floor((rem%3600000)/60000),s=Math.floor((rem%60000)/1000);
-    el2.textContent=`${d}d ${p2(h)}h ${p2(m)}m ${p2(s)}s`;
-  });
-}
-
-function renderCountdowns(){
-  const el=document.getElementById('cd-list');
-  if(!S.countdowns.length){el.innerHTML='<p style="font-size:.75rem;color:var(--text-muted)">No countdowns added.</p>';return;}
-  el.innerHTML=S.countdowns.map(c=>`
-    <div class="cd-item">
-      <div class="cd-label">${c.label}</div>
-      <div class="cd-time" id="cd-${c.id}">calculating…</div>
-      <button class="cd-del" onclick="deleteCountdown(${c.id})">✕</button>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════════
-// STOPWATCH
-// ══════════════════════════════════════════════
-function swGo(){
-  if(swRunning)return;swRunning=true;
-  const base=Date.now()-S.swElapsed;
-  swTick=setInterval(()=>{
-    S.swElapsed=Date.now()-base;
-    document.getElementById('sw-display').textContent=swFmt(S.swElapsed);
-  },13);
-  haptic();
-}
-function swHalt(){swRunning=false;clearInterval(swTick);haptic();}
-function swLap(){
-  if(!swRunning&&S.swElapsed===0)return;
-  S.laps.push(S.swElapsed);save();renderLaps();
-  checkAchieve('lap_recorded');haptic();
-  if(S.laps.length>=50)checkAchieve('time_lord');
-}
-function swClear(){swHalt();S.swElapsed=0;S.laps=[];
-  document.getElementById('sw-display').textContent='00:00:00.000';
-  renderLaps();save();}
-function swFmt(ms){
-  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
-  const s=Math.floor((ms%60000)/1000),ms3=ms%1000;
-  return `${p2(h)}:${p2(m)}:${p2(s)}.${String(ms3).padStart(3,'0')}`;
-}
-function renderLaps(){
-  const el=document.getElementById('laps-list');
-  el.innerHTML=[...S.laps].reverse().map((t,ri)=>{
-    const i=S.laps.length-1-ri;
-    const delta=i>0?` +${swFmt(t-S.laps[i-1])}`:'';
-    return `<div class="lap-item">
-      <span class="lap-n">Lap ${i+1}</span>
-      <span class="lap-t">${swFmt(t)}</span>
-      <span class="lap-d">${delta}</span>
-    </div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════════
-// POMODORO
-// ══════════════════════════════════════════════
+// ── POMODORO ─────────────────────────
 function pomoDraw(){
   const m=Math.floor(S.pomoLeft/60),s=S.pomoLeft%60;
-  document.getElementById('pomo-display').textContent=`${p2(m)}:${p2(s)}`;
+  document.getElementById('pomo-disp').textContent=`${p2(m)}:${p2(s)}`;
   document.getElementById('pomo-bar').style.width=(S.pomoLeft/S.pomoTotal*100)+'%';
 }
-function pomoStart(){
-  if(pomoRunning)return;pomoRunning=true;haptic();
-  pomoTick=setInterval(()=>{
-    if(S.pomoLeft<=0){pomoPause();pomoDone();return;}
-    S.pomoLeft--;pomoDraw();
-  },1000);
+function pomoToggle(){
+  if(S.pomoRunning){
+    S.pomoRunning=false;clearInterval(pomoTick);
+    document.getElementById('pomo-pp').textContent='▶ Resume';
+  } else {
+    S.pomoRunning=true;
+    pomoTick=setInterval(()=>{
+      if(S.pomoLeft<=0){
+        S.pomoRunning=false;clearInterval(pomoTick);
+        document.getElementById('pomo-pp').textContent='▶ Start';
+        pomoDone();return;
+      }
+      S.pomoLeft--;pomoDraw();
+      // Notify at 5 min remaining
+      if(S.pomoLeft===300)notify('🍅 Pomodoro','5 minutes remaining!');
+    },1000);
+    document.getElementById('pomo-pp').textContent='⏸ Pause';
+  }
+  haptic();
 }
-function pomoPause(){pomoRunning=false;clearInterval(pomoTick);}
-function pomoReset(){pomoPause();S.pomoLeft=S.pomoTotal;pomoDraw();}
+function pomoReset(){
+  S.pomoRunning=false;clearInterval(pomoTick);
+  S.pomoLeft=S.pomoTotal;pomoDraw();
+  document.getElementById('pomo-pp').textContent='▶ Start';
+}
 function pomoSet(mins,label){
-  pomoPause();S.pomoTotal=S.pomoLeft=mins*60;
-  document.getElementById('pomo-label').textContent=label;
+  S.pomoRunning=false;clearInterval(pomoTick);
+  S.pomoTotal=S.pomoLeft=mins*60;
+  document.getElementById('pomo-lbl').textContent=label;
+  document.getElementById('pomo-pp').textContent='▶ Start';
   pomoDraw();
 }
 function pomoDone(){
-  playPomoEnd();toast('🍅 Session complete!');
-  S.pomoTotalSessions++;
-  // Streak
+  playPomoEnd();toast('🍅 Session complete! Take a break.');
+  notify('🍅 Pomodoro Complete!','Great work! Time for a break.');
+  S.pomoSessions++;
   const today=new Date().toDateString();
   if(S.pomoLastDate===today){
-    const day=S.pomoHistory.find(d=>d.date===today);
-    if(day)day.count++;else S.pomoHistory.push({date:today,count:1});
+    const d=S.pomoHistory.find(h=>h.date===today);
+    if(d)d.count++;else S.pomoHistory.push({date:today,count:1});
   } else {
-    const yesterday=new Date(Date.now()-86400000).toDateString();
-    S.pomoStreak=S.pomoLastDate===yesterday?S.pomoStreak+1:1;
+    const yest=new Date(Date.now()-86400000).toDateString();
+    S.pomoStreak=S.pomoLastDate===yest?S.pomoStreak+1:1;
     S.pomoLastDate=today;
     S.pomoHistory.push({date:today,count:1});
     if(S.pomoHistory.length>14)S.pomoHistory.shift();
   }
   save();renderStats();
-  checkAchieve('pomo_done');
-  if(S.pomoTotalSessions>=10)checkAchieve('focus_master');
-  if(S.pomoStreak>=7)checkAchieve('streak_king');
+  checkAch('pomo_done');
+  if(S.pomoSessions>=10)checkAch('focus_master');
+  if(S.pomoStreak>=7)checkAch('streak_king');
 }
 function renderStats(){
   const today=new Date().toDateString();
-  const todayData=S.pomoHistory.find(d=>d.date===today);
-  document.getElementById('st-today').textContent=todayData?todayData.count:0;
-  document.getElementById('st-streak').textContent=`🔥 ${S.pomoStreak}`;
-  document.getElementById('st-total').textContent=S.pomoTotalSessions;
-  document.getElementById('st-hrs').textContent=Math.round(S.pomoTotalSessions*25/60*10)/10+'h';
-  // Bars (last 7 days)
-  const barsEl=document.getElementById('stats-bars');
+  const td=S.pomoHistory.find(h=>h.date===today);
+  document.getElementById('st-today').textContent=td?td.count:0;
+  document.getElementById('st-streak').textContent='🔥'+S.pomoStreak;
+  document.getElementById('st-total').textContent=S.pomoSessions;
+  document.getElementById('st-hrs').textContent=(Math.round(S.pomoSessions*25/60*10)/10)+'h';
+  const el=document.getElementById('stat-bars');
   const last7=[];
   for(let i=6;i>=0;i--){
-    const d=new Date(Date.now()-i*86400000).toDateString();
-    const found=S.pomoHistory.find(h=>h.date===d);
-    last7.push({date:d,count:found?found.count:0,day:new Date(Date.now()-i*86400000).toLocaleDateString('en',{weekday:'short'})});
+    const d=new Date(Date.now()-i*86400000);
+    const ds=d.toDateString();
+    const f=S.pomoHistory.find(h=>h.date===ds);
+    last7.push({c:f?f.count:0,day:d.toLocaleDateString('en',{weekday:'short'})});
   }
-  const max=Math.max(...last7.map(d=>d.count),1);
-  barsEl.innerHTML=last7.map(d=>`
-    <div class="stat-bar-wrap">
-      <div class="stat-bar" style="height:${Math.round(d.count/max*80)+4}px"></div>
-      <div class="stat-bar-lbl">${d.day}<br>${d.count||''}</div>
+  const mx=Math.max(...last7.map(d=>d.c),1);
+  el.innerHTML=last7.map(d=>`
+    <div class="sbar-w">
+      <div class="sbar" style="height:${Math.round(d.c/mx*66)+4}px"></div>
+      <div class="sbar-l">${d.day}<br>${d.c||''}</div>
     </div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// WORLD CLOCKS
-// ══════════════════════════════════════════════
-const ZONES=[
-  {city:'UTC',tz:'UTC',flag:'🌐'},
-  {city:'New York',tz:'America/New_York',flag:'🗽'},
-  {city:'London',tz:'Europe/London',flag:'🇬🇧'},
-  {city:'Tokyo',tz:'Asia/Tokyo',flag:'🗼'},
-  {city:'Dubai',tz:'Asia/Dubai',flag:'🇦🇪'},
-  {city:'Sydney',tz:'Australia/Sydney',flag:'🦘'},
+// ── STOPWATCH ────────────────────────
+function swFmt(ms){
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);
+  const s=Math.floor((ms%60000)/1000),ms3=ms%1000;
+  return`${p2(h)}:${p2(m)}:${p2(s)}.${String(ms3).padStart(3,'0')}`;
+}
+function swToggle(){
+  if(swRunning){
+    swRunning=false;clearInterval(swTick);
+    document.getElementById('sw-pp').textContent='▶ Resume';
+    notify('⏱ Stopwatch Paused',swFmt(S.swElapsed));
+  } else {
+    swRunning=true;
+    const base=Date.now()-S.swElapsed;
+    swTick=setInterval(()=>{
+      S.swElapsed=Date.now()-base;
+      document.getElementById('sw-disp').textContent=swFmt(S.swElapsed);
+    },13);
+    document.getElementById('sw-pp').textContent='⏸ Pause';
+    notify('⏱ Stopwatch Running','Click to pause from the app');
+  }
+  haptic();
+}
+function swLap(){
+  if(!swRunning&&S.swElapsed===0)return;
+  S.lapList.push(S.swElapsed);save();renderLaps();
+  checkAch('lap_rec');haptic();
+  if(S.lapList.length>=50)checkAch('time_lord');
+}
+function swClear(){
+  swRunning=false;clearInterval(swTick);
+  S.swElapsed=0;S.lapList=[];
+  document.getElementById('sw-disp').textContent='00:00:00.000';
+  document.getElementById('sw-pp').textContent='▶ Start';
+  renderLaps();save();
+}
+function renderLaps(){
+  const el=document.getElementById('laps');
+  el.innerHTML=[...S.lapList].reverse().map((t,ri)=>{
+    const i=S.lapList.length-1-ri;
+    const delta=i>0?` +${swFmt(t-S.lapList[i-1])}`:'';
+    return`<div class="lap"><span class="lap-n">Lap ${i+1}</span><span class="lap-t">${swFmt(t)}</span><span class="lap-d">${delta}</span></div>`;
+  }).join('');
+}
+
+// ── COUNTDOWN ────────────────────────
+function addCd(){
+  const lbl=document.getElementById('cd-lbl').value||'Event';
+  const dt=document.getElementById('cd-date').value;if(!dt)return;
+  S.countdowns.push({id:Date.now(),label:lbl,target:new Date(dt).getTime()});
+  document.getElementById('cd-lbl').value='';
+  save();renderCds();toast('⏳ Countdown added!');
+}
+function delCd(id){S.countdowns=S.countdowns.filter(x=>x.id!==id);save();renderCds();}
+function renderCds(){
+  const el=document.getElementById('cd-list');
+  if(!S.countdowns.length){el.innerHTML='<p style="font-size:.75rem;color:var(--tx2)">No countdowns.</p>';return;}
+  el.innerHTML=S.countdowns.map(c=>`
+    <div class="cd-item">
+      <div class="cd-name">${c.label}</div>
+      <div class="cd-val" id="cd-${c.id}">—</div>
+      <button class="cd-del" onclick="delCd(${c.id})">✕</button>
+    </div>`).join('');
+}
+function updateCds(){
+  const now=Date.now();
+  S.countdowns.forEach(c=>{
+    const el=document.getElementById('cd-'+c.id);if(!el)return;
+    const rem=c.target-now;
+    if(rem<=0){el.textContent='🎉 Time up!';return;}
+    const d=Math.floor(rem/86400000),h=Math.floor((rem%86400000)/3600000);
+    const m=Math.floor((rem%3600000)/60000),s=Math.floor((rem%60000)/1000);
+    el.textContent=`${d}d ${p2(h)}h ${p2(m)}m ${p2(s)}s`;
+  });
+}
+setInterval(updateCds,1000);
+
+// ── WORLD CLOCK ──────────────────────
+const ALL_CITIES=[
+  {city:'UTC',country:'Universal',tz:'UTC',flag:'🌐'},
+  {city:'Mumbai',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Delhi',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Patna',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Kolkata',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Chennai',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Bengaluru',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Hyderabad',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Ahmedabad',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Jaipur',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'Lucknow',country:'India',tz:'Asia/Kolkata',flag:'🇮🇳'},
+  {city:'New York',country:'USA',tz:'America/New_York',flag:'🇺🇸'},
+  {city:'Los Angeles',country:'USA',tz:'America/Los_Angeles',flag:'🇺🇸'},
+  {city:'Chicago',country:'USA',tz:'America/Chicago',flag:'🇺🇸'},
+  {city:'Houston',country:'USA',tz:'America/Chicago',flag:'🇺🇸'},
+  {city:'London',country:'UK',tz:'Europe/London',flag:'🇬🇧'},
+  {city:'Paris',country:'France',tz:'Europe/Paris',flag:'🇫🇷'},
+  {city:'Berlin',country:'Germany',tz:'Europe/Berlin',flag:'🇩🇪'},
+  {city:'Rome',country:'Italy',tz:'Europe/Rome',flag:'🇮🇹'},
+  {city:'Madrid',country:'Spain',tz:'Europe/Madrid',flag:'🇪🇸'},
+  {city:'Moscow',country:'Russia',tz:'Europe/Moscow',flag:'🇷🇺'},
+  {city:'Istanbul',country:'Turkey',tz:'Europe/Istanbul',flag:'🇹🇷'},
+  {city:'Dubai',country:'UAE',tz:'Asia/Dubai',flag:'🇦🇪'},
+  {city:'Riyadh',country:'Saudi Arabia',tz:'Asia/Riyadh',flag:'🇸🇦'},
+  {city:'Karachi',country:'Pakistan',tz:'Asia/Karachi',flag:'🇵🇰'},
+  {city:'Dhaka',country:'Bangladesh',tz:'Asia/Dhaka',flag:'🇧🇩'},
+  {city:'Kathmandu',country:'Nepal',tz:'Asia/Kathmandu',flag:'🇳🇵'},
+  {city:'Colombo',country:'Sri Lanka',tz:'Asia/Colombo',flag:'🇱🇰'},
+  {city:'Tokyo',country:'Japan',tz:'Asia/Tokyo',flag:'🗼'},
+  {city:'Beijing',country:'China',tz:'Asia/Shanghai',flag:'🇨🇳'},
+  {city:'Shanghai',country:'China',tz:'Asia/Shanghai',flag:'🇨🇳'},
+  {city:'Seoul',country:'South Korea',tz:'Asia/Seoul',flag:'🇰🇷'},
+  {city:'Singapore',country:'Singapore',tz:'Asia/Singapore',flag:'🇸🇬'},
+  {city:'Bangkok',country:'Thailand',tz:'Asia/Bangkok',flag:'🇹🇭'},
+  {city:'Jakarta',country:'Indonesia',tz:'Asia/Jakarta',flag:'🇮🇩'},
+  {city:'Kuala Lumpur',country:'Malaysia',tz:'Asia/Kuala_Lumpur',flag:'🇲🇾'},
+  {city:'Sydney',country:'Australia',tz:'Australia/Sydney',flag:'🦘'},
+  {city:'Melbourne',country:'Australia',tz:'Australia/Melbourne',flag:'🇦🇺'},
+  {city:'Auckland',country:'New Zealand',tz:'Pacific/Auckland',flag:'🇳🇿'},
+  {city:'Cairo',country:'Egypt',tz:'Africa/Cairo',flag:'🇪🇬'},
+  {city:'Lagos',country:'Nigeria',tz:'Africa/Lagos',flag:'🇳🇬'},
+  {city:'Nairobi',country:'Kenya',tz:'Africa/Nairobi',flag:'🇰🇪'},
+  {city:'Johannesburg',country:'South Africa',tz:'Africa/Johannesburg',flag:'🇿🇦'},
+  {city:'Toronto',country:'Canada',tz:'America/Toronto',flag:'🇨🇦'},
+  {city:'Vancouver',country:'Canada',tz:'America/Vancouver',flag:'🇨🇦'},
+  {city:'Mexico City',country:'Mexico',tz:'America/Mexico_City',flag:'🇲🇽'},
+  {city:'São Paulo',country:'Brazil',tz:'America/Sao_Paulo',flag:'🇧🇷'},
+  {city:'Buenos Aires',country:'Argentina',tz:'America/Argentina/Buenos_Aires',flag:'🇦🇷'},
+  {city:'Kabul',country:'Afghanistan',tz:'Asia/Kabul',flag:'🇦🇫'},
+  {city:'Tehran',country:'Iran',tz:'Asia/Tehran',flag:'🇮🇷'},
 ];
+
+function wcSearch(q){
+  const res=document.getElementById('wc-res');
+  if(!q.trim()){res.classList.remove('show');return;}
+  const matches=ALL_CITIES.filter(c=>
+    c.city.toLowerCase().includes(q.toLowerCase())||
+    c.country.toLowerCase().includes(q.toLowerCase())
+  ).slice(0,12);
+  if(!matches.length){res.classList.remove('show');return;}
+  res.innerHTML=matches.map(c=>`
+    <div class="wc-result" onclick="addZone('${c.tz}','${c.city}','${c.country}','${c.flag}')">
+      <span class="wc-r-city">${c.flag} ${c.city}</span>
+      <span class="wc-r-country">${c.country}</span>
+    </div>`).join('');
+  res.classList.add('show');
+}
+function addZone(tz,city,country,flag){
+  if(S.selectedZones.includes(tz)){toast('Already added!');return;}
+  if(S.selectedZones.length>=8){toast('Max 8 clocks!');return;}
+  S.selectedZones.push(tz);
+  // Store display info
+  if(!S.zoneInfo)S.zoneInfo={};
+  S.zoneInfo[tz]={city,country,flag};
+  document.getElementById('wc-search').value='';
+  document.getElementById('wc-res').classList.remove('show');
+  save();buildWorld();toast(`Added ${city}!`);
+}
+function removeZone(tz){
+  S.selectedZones=S.selectedZones.filter(z=>z!==tz);
+  save();buildWorld();
+}
 function buildWorld(){
-  document.getElementById('world-grid').innerHTML=ZONES.map(z=>{
-    const id=z.tz.replace(/\//g,'-');
-    return `<div class="wc-card">
-      <div class="wc-flag">${z.flag}</div>
+  const el=document.getElementById('world-grid');
+  const zoneData={
+    'UTC':{city:'UTC',flag:'🌐'},
+    'America/New_York':{city:'New York',flag:'🇺🇸'},
+    'Europe/London':{city:'London',flag:'🇬🇧'},
+    'Asia/Tokyo':{city:'Tokyo',flag:'🗼'},
+    'Asia/Kolkata':{city:'India',flag:'🇮🇳'},
+    'Asia/Dubai':{city:'Dubai',flag:'🇦🇪'},
+  };
+  el.innerHTML=S.selectedZones.map(tz=>{
+    const zi=(S.zoneInfo&&S.zoneInfo[tz])||zoneData[tz]||{city:tz,flag:'🌍'};
+    const id=tz.replace(/[\/]/g,'-');
+    return`<div class="wc-card">
+      <div class="wc-flag">${zi.flag}</div>
       <div class="wc-time" id="wt-${id}">--:--</div>
-      <div class="wc-city">${z.city}</div>
+      <div class="wc-city">${zi.city}</div>
       <div class="wc-date" id="wd-${id}"></div>
+      <button class="wc-rem" onclick="removeZone('${tz}')">✕</button>
     </div>`;
   }).join('');
 }
 function updateWorld(now){
-  ZONES.forEach(z=>{
-    const id=z.tz.replace(/\//g,'-');
+  S.selectedZones.forEach(tz=>{
+    const id=tz.replace(/[\/]/g,'-');
     const te=document.getElementById('wt-'+id);
     const de=document.getElementById('wd-'+id);
     if(!te)return;
-    te.textContent=now.toLocaleTimeString('en-US',{timeZone:z.tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-    de.textContent=now.toLocaleDateString('en-US',{timeZone:z.tz,weekday:'short',month:'short',day:'numeric'});
+    te.textContent=now.toLocaleTimeString('en-US',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    de.textContent=now.toLocaleDateString('en-US',{timeZone:tz,weekday:'short',month:'short',day:'numeric'});
   });
 }
 
-// ══════════════════════════════════════════════
-// CALENDAR
-// ══════════════════════════════════════════════
+// ── FESTIVALS ────────────────────────
+const FESTIVALS = {};
+function addF(mo,dy,name){
+  const k=`${String(mo).padStart(2,'0')}-${String(dy).padStart(2,'0')}`;
+  if(!FESTIVALS[k])FESTIVALS[k]=[];
+  FESTIVALS[k].push(name);
+}
+// Fixed date festivals
+addF(1,1,'🎊 New Year\'s Day');
+addF(1,12,'🧡 Swami Vivekananda Jayanti');
+addF(1,14,'🪁 Makar Sankranti / Pongal');
+addF(1,26,'🇮🇳 Republic Day');
+addF(2,14,'💝 Valentine\'s Day');
+addF(2,19,'🛡️ Chhatrapati Shivaji Jayanti');
+addF(3,8,'👩 International Women\'s Day');
+addF(4,5,'🙏 Ram Navami (2025)');
+addF(4,14,'🌾 Baisakhi / Dr. Ambedkar Jayanti');
+addF(4,18,'💪 Hanuman Jayanti (2025)');
+addF(5,1,'👷 Labour Day');
+addF(5,12,'☸️ Buddha Purnima (2025)');
+addF(6,21,'🧘 International Yoga Day');
+addF(7,6,'🔱 Guru Purnima (2025)');
+addF(8,9,'📿 Muharram (2025)');
+addF(8,15,'🇮🇳 Independence Day');
+addF(8,16,'🎀 Raksha Bandhan (2025)');
+addF(8,20,'🏹 Janmashtami (2025)');
+addF(8,27,'🦚 Janmashtami alt (2025)');
+addF(9,5,'👨‍🏫 Teachers\' Day');
+addF(9,7,'🐘 Ganesh Chaturthi (2025)');
+addF(10,2,'🕊️ Gandhi Jayanti');
+addF(10,2,'🌺 Navratri begins (2025)');
+addF(10,12,'🏹 Dussehra (2025)');
+addF(10,14,'🎊 Milad-un-Nabi (2025)');
+addF(10,20,'🪔 Diwali (2025)');
+addF(10,21,'🎁 Govardhan Puja (2025)');
+addF(10,22,'🌸 Bhai Dooj (2025)');
+addF(11,1,'📚 Chhath Puja begins (2025)');
+addF(11,5,'☀️ Chhath Puja main day (2025)');
+addF(11,5,'👶 Children\'s Day (Nehru Jayanti)');
+addF(11,14,'Children\'s Day');
+addF(11,15,'🕉️ Guru Nanak Jayanti (2025)');
+addF(12,25,'🎄 Christmas Day');
+addF(12,31,'🎉 New Year\'s Eve');
+// 2026
+addF(1,14,'🪁 Makar Sankranti');
+addF(2,26,'🔱 Maha Shivratri (2026)');
+addF(3,3,'🎨 Holi (2026)');
+addF(5,1,'👷 Labour Day');
+addF(8,15,'🇮🇳 Independence Day');
+addF(10,2,'🕊️ Gandhi Jayanti');
+
+// ── CALENDAR ─────────────────────────
+let selCalDate=null;
 function buildCalendar(){
   const now=new Date();
-  if(!S.calMonth){S.calMonth=now.getMonth();S.calYear=now.getFullYear();}
+  if(S.calMonth===null){S.calMonth=now.getMonth();S.calYear=now.getFullYear();}
   renderCal();
 }
 function calPrev(){S.calMonth--;if(S.calMonth<0){S.calMonth=11;S.calYear--;}renderCal();}
@@ -1473,160 +1620,236 @@ function renderCal(){
   const startDay=first.getDay();
   document.getElementById('cal-title').textContent=
     first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  let html=days.map(d=>`<div class="cal-cell day-head">${d}</div>`).join('');
-  for(let i=0;i<startDay;i++)html+=`<div class="cal-cell other-month"></div>`;
+  let html=days.map(d=>`<div class="cal-cell dh">${d}</div>`).join('');
+  for(let i=0;i<startDay;i++)html+=`<div class="cal-cell om"></div>`;
   for(let d=1;d<=last;d++){
     const isToday=d===now.getDate()&&S.calMonth===now.getMonth()&&S.calYear===now.getFullYear();
-    html+=`<div class="cal-cell ${isToday?'today':''}">${d}</div>`;
+    const key=`${String(S.calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasFest=!!FESTIVALS[key];
+    const isSel=selCalDate===key;
+    html+=`<div class="cal-cell ${isToday?'today':''} ${hasFest?'festival':''} ${isSel?'selected':''}" onclick="selectDate('${key}',${d})">${d}</div>`;
   }
   document.getElementById('cal-grid').innerHTML=html;
+  if(selCalDate)showFestival(selCalDate);
+  else{
+    const todayKey=`${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    showFestival(todayKey);
+  }
+}
+function selectDate(key,d){
+  selCalDate=key;renderCal();showFestival(key);
+}
+function showFestival(key){
+  const el=document.getElementById('festival-info');
+  const fests=FESTIVALS[key];
+  if(fests&&fests.length){
+    el.innerHTML=`<strong>${fests.join('<br>')}</strong>`;
+    el.style.color='var(--pr)';
+  } else {
+    el.innerHTML='No festival on this date.';
+    el.style.color='var(--tx2)';
+  }
 }
 
-// ══════════════════════════════════════════════
-// POOJA / AUSPICIOUS TIMES (Patna, Bihar ~25.6°N)
-// ══════════════════════════════════════════════
-function calcSunTimes(lat,lng,date){
-  // Simple sunrise/sunset calculation
-  const d=Math.floor((date-(new Date(date.getFullYear(),0,0)))/86400000);
-  const p=Math.PI/180;
-  const D=23.45*Math.sin((360/365*(d-81))*p);
-  const cosH=(-Math.sin(-0.83*p)-Math.sin(lat*p)*Math.sin(D*p))/(Math.cos(lat*p)*Math.cos(D*p));
-  if(Math.abs(cosH)>1)return{rise:6,set:18};
-  const H=Math.acos(cosH)/p;
-  const rise=12-H/15-lng/15+5.5; // UTC+5:30
-  const set =12+H/15-lng/15+5.5;
-  return{rise:((rise%24)+24)%24,set:((set%24)+24)%24};
-}
-
-function renderPooja(){
-  const el=document.getElementById('pooja-grid');
-  if(!el)return;
-  const lat=25.59,lng=85.14; // Patna, Bihar
+// ── AUSPICIOUS TIMES ─────────────────
+const AUS_TIMES=[
+  {name:'Brahma Muhurta',time:'04:30',desc:'Most auspicious morning hour'},
+  {name:'Pratah Kaal',time:'06:00',desc:'Early morning prayer time'},
+  {name:'Sangava Kaal',time:'09:00',desc:'Mid-morning auspicious time'},
+  {name:'Madhyahna',time:'12:00',desc:'Noon prayer time'},
+  {name:'Aparahna',time:'15:00',desc:'Afternoon auspicious time'},
+  {name:'Sayahna Sandhya',time:'18:00',desc:'Sunset prayer time'},
+  {name:'Pradosh Kaal',time:'19:30',desc:'Evening ritual time'},
+  {name:'Midnight Time',time:'00:00',desc:'Sacred midnight hour'},
+];
+function renderAus(){
+  const el=document.getElementById('aus-grid');if(!el)return;
   const now=new Date();
-  const sun=calcSunTimes(lat,lng,now);
-  const H=now.getHours()+now.getMinutes()/60;
-
-  const times=[
-    {name:'🕉️ Brahma Muhurta',time:sun.rise-1.5,desc:'Most auspicious time'},
-    {name:'🌅 Pratah Sandhya',time:sun.rise,desc:'Sunrise prayer'},
-    {name:'☀️ Madhyahna',time:12,desc:'Noon prayer'},
-    {name:'🌇 Sayam Sandhya',time:sun.set,desc:'Sunset prayer'},
-    {name:'🕌 Pradosh',time:sun.set+1.5,desc:'Evening ritual'},
-    {name:'🌙 Nishitha Kaal',time:0,desc:'Midnight puja'},
-  ];
-
-  el.innerHTML=times.map(t=>{
-    const hh=Math.floor(t.time),mm=Math.round((t.time-hh)*60);
-    const ampm=hh>=12?'PM':'AM',h12=hh%12||12;
-    const active=Math.abs(H-t.time)<.5;
-    return `<div class="pooja-item ${active?'active-now':''}">
+  const H=now.getHours(),M=now.getMinutes();
+  el.innerHTML=AUS_TIMES.map(a=>{
+    const [ah,am]=a.time.split(':').map(Number);
+    const active=(H===ah&&Math.abs(M-am)<30);
+    const h12=ah%12||12,ampm=ah>=12?'PM':'AM';
+    return`<div class="aus-item ${active?'now':''}">
       <div>
-        <div class="pooja-name">${t.name}</div>
-        <div style="font-size:.65rem;color:var(--text-muted)">${t.desc}</div>
+        <div class="aus-name">${a.name}</div>
+        <div class="aus-sub">${a.desc}</div>
       </div>
-      <div class="pooja-time">${h12}:${p2(mm)} ${ampm}</div>
+      <div class="aus-time">${h12}:${p2(am)} ${ampm}</div>
     </div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════
-// NOTES
-// ══════════════════════════════════════════════
+// ── NOTES ────────────────────────────
 function addNote(){
-  const txt=document.getElementById('note-input').value.trim();
-  if(!txt)return;
-  S.notes.unshift({id:Date.now(),text:txt,time:new Date().toLocaleTimeString()});
-  document.getElementById('note-input').value='';
+  const txt=document.getElementById('note-in').value.trim();if(!txt)return;
+  S.notes.unshift({id:Date.now(),text:txt,ts:new Date().toLocaleTimeString()});
+  document.getElementById('note-in').value='';
   save();renderNotes();haptic();
 }
-function deleteNote(id){S.notes=S.notes.filter(n=>n.id!==id);save();renderNotes();}
+function delNote(id){S.notes=S.notes.filter(n=>n.id!==id);save();renderNotes();}
 function renderNotes(){
   const el=document.getElementById('notes-grid');
-  if(!S.notes.length){el.innerHTML='<p style="font-size:.75rem;color:var(--text-muted)">No notes yet.</p>';return;}
+  if(!S.notes.length){el.innerHTML='<p style="font-size:.75rem;color:var(--tx2)">No notes yet.</p>';return;}
   el.innerHTML=S.notes.map(n=>`
     <div class="note-card">
-      <button class="note-del" onclick="deleteNote(${n.id})">✕</button>
+      <button class="note-del" onclick="delNote(${n.id})">✕</button>
       ${n.text}
-      <div class="note-time">📌 ${n.time}</div>
+      <div class="note-ts">📌 ${n.ts}</div>
     </div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// ACHIEVEMENTS
-// ══════════════════════════════════════════════
-const ACHIEV=[
-  {id:'early_bird',icon:'🐦',name:'Early Bird',desc:'Set alarm before 6 AM'},
-  {id:'night_owl',icon:'🦉',name:'Night Owl',desc:'Set alarm after 11 PM'},
-  {id:'focus_master',icon:'🎯',name:'Focus Master',desc:'Complete 10 Pomodoros'},
-  {id:'streak_king',icon:'🔥',name:'Streak King',desc:'7-day Pomodoro streak'},
-  {id:'time_lord',icon:'⏱️',name:'Time Lord',desc:'Record 50 laps'},
-  {id:'punctual',icon:'⚡',name:'Punctual',desc:'Dismiss alarm in 5 seconds'},
-  {id:'pomo_done',icon:'🍅',name:'First Focus',desc:'Complete first Pomodoro'},
-  {id:'alarm_set',icon:'⏰',name:'Alarm Setter',desc:'Set your first alarm'},
-];
-function checkAchieve(id){
-  if(S.achievements[id])return;
-  S.achievements[id]=Date.now();save();renderBadges();
-  const a=ACHIEV.find(x=>x.id===id);
-  if(a)toast(`🏆 Achievement: ${a.icon} ${a.name}`);
+// ── MEDICINE REMINDER ────────────────
+function addMed(){
+  const name=document.getElementById('med-name').value.trim();
+  const time=document.getElementById('med-time').value;
+  if(!name||!time)return;
+  S.medicines.push({id:Date.now(),name,time,taken:false});
+  document.getElementById('med-name').value='';
+  save();renderMeds();toast(`💊 Reminder set for ${name}`);haptic();
 }
-function renderBadges(){
-  document.getElementById('badge-grid').innerHTML=ACHIEV.map(a=>`
-    <div class="badge ${S.achievements[a.id]?'earned':''}">
-      <div class="badge-icon">${a.icon}</div>
-      <div class="badge-name">${a.name}</div>
+function takeMed(id){
+  const m=S.medicines.find(x=>x.id===id);
+  if(m){m.taken=!m.taken;save();renderMeds();}
+}
+function delMed(id){S.medicines=S.medicines.filter(x=>x.id!==id);save();renderMeds();}
+function renderMeds(){
+  const el=document.getElementById('med-list');
+  if(!S.medicines.length){el.innerHTML='<p style="font-size:.75rem;color:var(--tx2)">No medicines added.</p>';return;}
+  el.innerHTML=S.medicines.map(m=>`
+    <div class="med-item ${m.taken?'taken':''}">
+      <div class="med-name">${m.taken?'✅ ':'💊 '}${m.name}</div>
+      <div class="med-time">${fmtTime(m.time)}</div>
+      <button class="med-take" onclick="takeMed(${m.id})">${m.taken?'Undo':'Take'}</button>
+      <button class="med-del" onclick="delMed(${m.id})">✕</button>
     </div>`).join('');
 }
-
-// ══════════════════════════════════════════════
-// QUOTES
-// ══════════════════════════════════════════════
-const QUOTES=[
-  'The best time to plant a tree was 20 years ago. The second best time is now. — Proverb',
-  'It does not matter how slowly you go as long as you do not stop. — Confucius',
-  'Time is the most valuable thing a man can spend. — Theophrastus',
-  'Lost time is never found again. — Benjamin Franklin',
-  'How you spend your time is more important than how you spend your money. — David Norris',
-  'The key is not in spending time, but in investing it. — Stephen R. Covey',
-  'An hour of planning can save you 10 hours of doing. — Dale Carnegie',
-  'Yesterday is gone. Tomorrow has not yet come. We have only today. — Mother Teresa',
-  'Better three hours too soon than a minute too late. — William Shakespeare',
-  'Time flies over us, but leaves its shadow behind. — Nathaniel Hawthorne',
-  'Your time is limited, so don\'t waste it living someone else\'s life. — Steve Jobs',
-  'The trouble is, you think you have time. — Buddha',
-  'Amateurs sit and wait for inspiration. The rest of us just get up and go to work. — Stephen King',
-  'Success is the sum of small efforts, repeated day in and day out. — Robert Collier',
-  'Focus on being productive instead of busy. — Tim Ferriss',
-  'Well begun is half done. — Aristotle',
-  'A year from now you may wish you had started today. — Karen Lamb',
-  'Work is the only way. — Srinivasa Ramanujan',
-  'Either you run the day, or the day runs you. — Jim Rohn',
-  'Discipline is the bridge between goals and accomplishment. — Jim Rohn',
-  'जिंदगी में कुछ पाना है तो वक्त को अपना बनाओ।',
-  'मेहनत वो चाबी है जो किस्मत का ताला खोल देती है।',
-  'हर दिन नया मौका है — खुद को बेहतर बनाने का।',
-];
-function loadQuote(){
-  const q=QUOTES[Math.floor(Date.now()/86400000)%QUOTES.length];
-  document.getElementById('quote-pill').textContent=`"${q.split('—')[0].trim()}"`;
-  document.getElementById('quote-full').textContent=`"${q}"`;
+function checkMedicines(H,M,Sec){
+  if(Sec!==0)return;
+  S.medicines.filter(m=>!m.taken).forEach(m=>{
+    const [mh,mm]=m.time.split(':').map(Number);
+    if(H===mh&&M===mm){
+      notify('💊 Medicine Reminder',`Time to take: ${m.name}`);
+      toast(`💊 Take your medicine: ${m.name}`);
+      haptic(300);
+    }
+  });
 }
 
-// ══════════════════════════════════════════════
-// VOICE COMMANDS
-// ══════════════════════════════════════════════
+// ── WATER REMINDER ───────────────────
+function toggleWater(){
+  S.waterOn=!S.waterOn;
+  const btn=document.getElementById('water-btn');
+  if(S.waterOn){
+    S.waterInterval=parseInt(document.getElementById('water-interval').value);
+    waterTimer=setInterval(()=>{
+      notify('💧 Drink Water!','Stay hydrated — drink a glass of water now.');
+      toast('💧 Time to drink water!');haptic(200);
+    },S.waterInterval*60000);
+    btn.textContent='⏸ Stop Reminder';btn.classList.add('active');
+    toast(`💧 Reminder every ${S.waterInterval} minutes`);
+  } else {
+    clearInterval(waterTimer);
+    btn.textContent='▶ Start Reminder';btn.classList.remove('active');
+  }
+  save();
+}
+function resetWater(){S.waterCount=0;save();renderWater();}
+function addGlass(){
+  if(S.waterCount<8)S.waterCount++;
+  save();renderWater();haptic();
+}
+function renderWater(){
+  const el=document.getElementById('water-track');
+  el.innerHTML=Array.from({length:8},(_,i)=>
+    `<div class="glass-ico ${i<S.waterCount?'filled':''}" onclick="addGlass()">💧</div>`
+  ).join('');
+  document.getElementById('water-status').textContent=
+    `Daily goal: 8 glasses (${S.waterCount}/8) ${S.waterCount>=8?'✅ Goal reached!':''}`;
+}
+
+// ── STUDY PLANNER ────────────────────
+function addSubj(){
+  const name=document.getElementById('subj-name').value.trim();
+  const goal=parseInt(document.getElementById('subj-goal').value)||60;
+  if(!name)return;
+  S.subjects.push({id:Date.now(),name,goal,elapsed:0,running:false,lastDate:null});
+  document.getElementById('subj-name').value='';
+  save();renderSubjs();toast(`📖 Added ${name}`);
+}
+function delSubj(id){
+  if(activeSubj===id)stopSubjTimer(id);
+  S.subjects=S.subjects.filter(x=>x.id!==id);save();renderSubjs();
+}
+function toggleSubj(id){
+  const s=S.subjects.find(x=>x.id===id);if(!s)return;
+  if(s.running){stopSubjTimer(id);}
+  else{
+    // Reset if new day
+    const today=new Date().toDateString();
+    if(s.lastDate!==today){s.elapsed=0;s.lastDate=today;}
+    // Stop any other running subject
+    S.subjects.forEach(x=>{if(x.running&&x.id!==id)stopSubjTimer(x.id);});
+    s.running=true;activeSubj=id;
+    subjTick=setInterval(()=>{
+      const sx=S.subjects.find(x=>x.id===id);if(!sx||!sx.running)return;
+      sx.elapsed++;
+      renderSubjItem(id);
+      if(sx.elapsed>=sx.goal*60){
+        stopSubjTimer(id);
+        notify('📖 Study Goal Reached!',`${sx.name} — ${sx.goal} minutes completed! 🎉`);
+        toast(`🎯 ${sx.name} goal complete!`);
+        checkAch('study_done');
+      }
+    },1000);
+  }
+  renderSubjs();
+}
+function stopSubjTimer(id){
+  const s=S.subjects.find(x=>x.id===id);
+  if(s){s.running=false;}
+  if(activeSubj===id){clearInterval(subjTick);activeSubj=null;}
+  save();renderSubjs();
+}
+function renderSubjs(){
+  const el=document.getElementById('subj-list');
+  if(!S.subjects.length){el.innerHTML='<p style="font-size:.75rem;color:var(--tx2)">No subjects added. Add one above!</p>';return;}
+  el.innerHTML=S.subjects.map(s=>{
+    const pct=Math.min(100,Math.round(s.elapsed/(s.goal*60)*100));
+    const elapsed=`${Math.floor(s.elapsed/60)}m ${s.elapsed%60}s`;
+    return`<div class="subj-item">
+      <div class="subj-header">
+        <div class="subj-name">📚 ${s.name}</div>
+        <div class="subj-timer">${elapsed}</div>
+        <button class="btn" style="padding:4px 12px;font-size:.7rem" onclick="toggleSubj(${s.id})">${s.running?'⏸ Pause':'▶ Study'}</button>
+        <button class="subj-del" onclick="delSubj(${s.id})">✕</button>
+      </div>
+      <div class="subj-bar"><div class="subj-fill" style="width:${pct}%"></div></div>
+      <div class="subj-meta"><span>${pct}% of ${s.goal} min goal</span><span>Goal: ${s.goal} min/day</span></div>
+    </div>`;
+  }).join('');
+}
+function renderSubjItem(id){
+  const s=S.subjects.find(x=>x.id===id);if(!s)return;
+  const el=document.querySelector(`#subj-list .subj-item:nth-child(${S.subjects.indexOf(s)+1})`);
+  if(!el)return;renderSubjs();
+}
+
+// ── VOICE COMMANDS ───────────────────
 function toggleVoice(){
   if(!('SpeechRecognition' in window||'webkitSpeechRecognition' in window)){
     toast('Voice not supported in this browser');return;
   }
   voiceOn=!voiceOn;
   const btn=document.getElementById('btn-voice');
+  const status=document.getElementById('voice-status');
   if(voiceOn){
     btn.textContent='🔴 Listening…';btn.classList.add('active');
     startVoice();
   } else {
     btn.textContent='🎤 Start Listening';btn.classList.remove('active');
     if(recognition)recognition.stop();
+    status.textContent='Click to activate. Auto-stops after 5s of silence.';
   }
 }
 function startVoice(){
@@ -1634,241 +1857,326 @@ function startVoice(){
   recognition=new SR();
   recognition.continuous=true;recognition.lang='en-US';
   recognition.onresult=e=>{
+    clearTimeout(voiceSilTimer);
     const cmd=e.results[e.results.length-1][0].transcript.toLowerCase().trim();
     document.getElementById('voice-status').textContent=`Heard: "${cmd}"`;
     handleVoice(cmd);
+    // Auto-stop after 5s silence
+    voiceSilTimer=setTimeout(()=>{
+      if(voiceOn){
+        voiceOn=false;
+        if(recognition)recognition.stop();
+        document.getElementById('btn-voice').textContent='🎤 Start Listening';
+        document.getElementById('btn-voice').classList.remove('active');
+        document.getElementById('voice-status').textContent='Auto-stopped after silence.';
+      }
+    },5000);
   };
-  recognition.onerror=()=>{voiceOn=false;document.getElementById('btn-voice').textContent='🎤 Start Listening';};
+  recognition.onerror=()=>{
+    voiceOn=false;
+    document.getElementById('btn-voice').textContent='🎤 Start Listening';
+    document.getElementById('btn-voice').classList.remove('active');
+  };
   recognition.onend=()=>{if(voiceOn)recognition.start();};
   recognition.start();
+  // Start silence timer immediately
+  voiceSilTimer=setTimeout(()=>{
+    if(voiceOn){
+      voiceOn=false;if(recognition)recognition.stop();
+      document.getElementById('btn-voice').textContent='🎤 Start Listening';
+      document.getElementById('btn-voice').classList.remove('active');
+      document.getElementById('voice-status').textContent='Auto-stopped — no voice detected.';
+    }
+  },5000);
 }
 function handleVoice(cmd){
-  if(cmd.includes('start stopwatch')||cmd.includes('start watch')){swGo();toast('▶ Stopwatch started');}
-  else if(cmd.includes('stop stopwatch')||cmd.includes('stop watch')){swHalt();toast('⏸ Stopwatch stopped');}
-  else if(cmd.includes('lap')){swLap();toast('🏁 Lap recorded');}
-  else if(cmd.includes('start focus')||cmd.includes('start pomodoro')){openTabByName('focus');pomoStart();toast('🍅 Focus started');}
-  else if(cmd.includes('stop focus')){pomoPause();toast('⏸ Focus paused');}
-  else if(cmd.includes('fullscreen')){enterFullscreen();}
-  else if(cmd.includes('dark mode')){if(!S.isDark){toggleDark();}}
-  else if(cmd.includes('light mode')){if(S.isDark){toggleDark();}}
-  else if(cmd.includes('what time')){toast(`🕐 It is ${document.getElementById('time-main').textContent}`);}
+  if(cmd.includes('start stopwatch')){swRunning||swToggle();toast('▶ Stopwatch started');}
+  else if(cmd.includes('stop stopwatch')){swRunning&&swToggle();toast('⏸ Stopwatch stopped');}
+  else if(cmd.includes('lap')){swLap();toast('🏁 Lap!');}
+  else if(cmd.includes('start focus')||cmd.includes('start pomodoro')){if(!S.pomoRunning)pomoToggle();toast('🍅 Focus started');}
+  else if(cmd.includes('stop focus')||cmd.includes('pause focus')){if(S.pomoRunning)pomoToggle();toast('⏸ Focus paused');}
+  else if(cmd.includes('fullscreen')){goFull();}
+  else if(cmd.includes('dark mode')){if(!S.isDark)toggleDark();}
+  else if(cmd.includes('light mode')){if(S.isDark)toggleDark();}
+  else if(cmd.includes('what time')){toast(`🕐 ${document.getElementById('time-main').textContent}`);}
   else if(cmd.includes('set alarm')){
-    const match=cmd.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+    const match=cmd.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
     if(match){
       let h=parseInt(match[1]),m=parseInt(match[2]||0);
-      if(match[3]==='pm'&&h<12)h+=12;
-      if(match[3]==='am'&&h===12)h=0;
+      if(match[3]?.toLowerCase()==='pm'&&h<12)h+=12;
+      if(match[3]?.toLowerCase()==='am'&&h===12)h=0;
       document.getElementById('al-time').value=`${p2(h)}:${p2(m)}`;
-      addAlarm();toast(`⏰ Alarm set for ${h}:${p2(m)}`);
+      addAlarm();
     }
   }
-  else if(cmd.includes('next tab')){
-    tabIdx=(tabIdx+1)%TABS.length;
-    openTabByName(TABS[tabIdx]);
-  }
-  else{toast(`❓ Command not recognized`);}
-}
-function openTabByName(name){
-  const tabs=document.querySelectorAll('.tab');
-  const idx=TABS.indexOf(name);
-  if(idx>=0){openTab(name,tabs[idx]);}
+  else toast(`❓ Not recognized`);
 }
 
-// ══════════════════════════════════════════════
-// WHITE NOISE GENERATOR
-// ══════════════════════════════════════════════
-let noiseGain=null;
-function playNoise(type,btn){
-  stopNoise();
-  const ctx=getAudio();
-  const bufSz=ctx.sampleRate*3;
-  const buf=ctx.createBuffer(2,bufSz,ctx.sampleRate);
-  for(let c=0;c<2;c++){
-    const data=buf.getChannelData(c);
-    for(let i=0;i<bufSz;i++)data[i]=Math.random()*2-1;
-  }
-  noiseSource=ctx.createBufferSource();
-  noiseSource.buffer=buf;noiseSource.loop=true;
-  const filt=ctx.createBiquadFilter();
-  noiseGain=ctx.createGain();
-  noiseGain.gain.value=S.masterVolume*.4;
-
-  if(type==='rain'){
-    filt.type='bandpass';filt.frequency.value=600;filt.Q.value=0.5;
-    // LFO for rain variation
-    const lfo=ctx.createOscillator();
-    const lfog=ctx.createGain();
-    lfo.frequency.value=0.5;lfog.gain.value=.08;
-    lfo.connect(lfog);lfog.connect(noiseGain.gain);lfo.start();
-  } else if(type==='ocean'){
-    filt.type='lowpass';filt.frequency.value=400;
-    const lfo=ctx.createOscillator();
-    const lfog=ctx.createGain();
-    lfo.frequency.value=.15;lfog.gain.value=.15;
-    lfo.connect(lfog);lfog.connect(noiseGain.gain);lfo.start();
-  } else if(type==='forest'){
-    filt.type='highpass';filt.frequency.value=1200;noiseGain.gain.value=S.masterVolume*.15;
-  } else if(type==='fire'){
-    filt.type='lowpass';filt.frequency.value=200;
-    const lfo=ctx.createOscillator();
-    const lfog=ctx.createGain();
-    lfo.frequency.value=2;lfog.gain.value=.1;
-    lfo.connect(lfog);lfog.connect(noiseGain.gain);lfo.start();
-  }
-  noiseSource.connect(filt);filt.connect(noiseGain);noiseGain.connect(ctx.destination);
-  noiseSource.start();
-  document.querySelectorAll('.noise-btn').forEach(b=>b.classList.remove('playing'));
-  if(btn)btn.classList.add('playing');
-  toast(`Playing ${type} sounds 🎵`);
-}
-function stopNoise(){
-  if(noiseSource){try{noiseSource.stop();}catch(e){}noiseSource=null;}
-  document.querySelectorAll('.noise-btn').forEach(b=>b.classList.remove('playing'));
-}
-function setVolume(v){
-  S.masterVolume=parseFloat(v);
-  document.getElementById('vol-pct').textContent=Math.round(v*100)+'%';
-  if(noiseGain)noiseGain.gain.value=S.masterVolume*.4;
-  save();
-}
-
-// ══════════════════════════════════════════════
-// CUSTOM AUDIO
-// ══════════════════════════════════════════════
-let customAudioBuf=null, customAudioSrc=null;
-function loadCustomAudio(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    const ctx=getAudio();
-    customAudioBuf=await ctx.decodeAudioData(e.target.result.slice(0));
-    document.getElementById('custom-audio-name').textContent=`✅ Loaded: ${file.name}`;
-    toast('Custom alarm sound loaded!');
-  };
-  reader.readAsArrayBuffer(file);
-}
-function testCustomAudio(){
-  if(!customAudioBuf){toast('Upload an audio file first');return;}
-  const ctx=getAudio();
-  const src=ctx.createBufferSource();
-  const g=ctx.createGain();g.gain.value=S.masterVolume;
-  src.buffer=customAudioBuf;src.connect(g);g.connect(ctx.destination);src.start();
-}
-function openLofi(type){
-  const urls={lofi:'https://www.youtube.com/watch?v=jfKfPfyJRdk',jazz:'https://www.youtube.com/watch?v=Dx5qFachd3A'};
-  window.open(urls[type],'_blank');
-}
-
-// ══════════════════════════════════════════════
-// ALARM SOUNDS
-// ══════════════════════════════════════════════
-function playAlarm(type){
-  if(customAudioBuf&&type==='custom'){testCustomAudio();return;}
+// ── AUDIO: ALARM SOUNDS ──────────────
+function playAlarmSound(type){
+  if(type==='custom'){testCustom();return;}
   if(type==='zen')zenBell(.7);
   else if(type==='mechanical')mechanical();
   else if(type==='birds')birds();
-  else if(type==='hanuman')hanumanBell();
   else digitalBeep();
 }
 function zenBell(vol=.5){
-  const ctx=getAudio();
-  const o=ctx.createOscillator(),g=ctx.createGain();
+  const ctx=ac(),o=ctx.createOscillator(),g=ctx.createGain();
   o.connect(g);g.connect(ctx.destination);
   o.type='sine';o.frequency.setValueAtTime(528,ctx.currentTime);
   o.frequency.exponentialRampToValueAtTime(264,ctx.currentTime+2.5);
-  g.gain.setValueAtTime(vol*S.masterVolume,ctx.currentTime);
+  g.gain.setValueAtTime(vol*S.volume,ctx.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+3);
   o.start();o.stop(ctx.currentTime+3);
 }
-function hanumanBell(){
-  const ctx=getAudio();
-  [528,660,792,528].forEach((f,i)=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type='triangle';o.frequency.value=f;
-    const t=ctx.currentTime+i*.55;
-    g.gain.setValueAtTime(.6*S.masterVolume,t);
-    g.gain.exponentialRampToValueAtTime(.001,t+1.2);
-    o.start(t);o.stop(t+1.2);
-  });
-}
 function mechanical(){
-  const ctx=getAudio();
+  const ctx=ac();
   for(let i=0;i<7;i++){
     const o=ctx.createOscillator(),g=ctx.createGain();
     o.connect(g);g.connect(ctx.destination);
     o.type='square';o.frequency.value=880;
     const t=ctx.currentTime+i*.14;
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.3*S.masterVolume,t+.05);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.28*S.volume,t+.05);
     g.gain.linearRampToValueAtTime(0,t+.13);
     o.start(t);o.stop(t+.13);
   }
 }
 function birds(){
-  const ctx=getAudio();
+  const ctx=ac();
   for(let i=0;i<5;i++){
     const o=ctx.createOscillator(),g=ctx.createGain();
     o.connect(g);g.connect(ctx.destination);
     o.type='sine';
-    const b=1000+Math.random()*800;
-    const t=ctx.currentTime+i*.3;
+    const b=1000+Math.random()*700,t=ctx.currentTime+i*.3;
     o.frequency.setValueAtTime(b,t);
     o.frequency.exponentialRampToValueAtTime(b*1.7,t+.15);
     o.frequency.exponentialRampToValueAtTime(b,t+.28);
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.2*S.masterVolume,t+.05);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18*S.volume,t+.04);
     g.gain.linearRampToValueAtTime(0,t+.28);
     o.start(t);o.stop(t+.28);
   }
 }
 function digitalBeep(){
-  const ctx=getAudio();
-  const o=ctx.createOscillator(),g=ctx.createGain();
+  const ctx=ac(),o=ctx.createOscillator(),g=ctx.createGain();
   o.connect(g);g.connect(ctx.destination);
   o.type='square';o.frequency.value=1000;
   [0,.15,.3].forEach(off=>{
-    g.gain.setValueAtTime(.25*S.masterVolume,ctx.currentTime+off);
+    g.gain.setValueAtTime(.25*S.volume,ctx.currentTime+off);
     g.gain.setValueAtTime(0,ctx.currentTime+off+.1);
   });
   o.start();o.stop(ctx.currentTime+.45);
 }
 function playPomoEnd(){
-  const ctx=getAudio();
+  const ctx=ac();
   [528,660,880].forEach((f,i)=>{
     const o=ctx.createOscillator(),g=ctx.createGain();
     o.connect(g);g.connect(ctx.destination);
     o.type='sine';o.frequency.value=f;
     const t=ctx.currentTime+i*.5;
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5*S.masterVolume,t+.1);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5*S.volume,t+.1);
     g.gain.exponentialRampToValueAtTime(.001,t+1);
     o.start(t);o.stop(t+1);
   });
 }
 
-// ══════════════════════════════════════════════
-// BACKGROUND
-// ══════════════════════════════════════════════
-const BG_TOPICS=['nature','mountains','forest','aurora','cosmos','waterfall','desert','ocean'];
+// ── AUDIO: AMBIENT NOISE ─────────────
+function stopNoise(){
+  if(noiseNode){try{noiseNode.stop();}catch(e){}noiseNode=null;}
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('playing'));
+}
+function playNoise(type,btn){
+  stopNoise();
+  const ctx=ac();
+  const bufSz=ctx.sampleRate*4;
+  const buf=ctx.createBuffer(2,bufSz,ctx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=buf.getChannelData(c);
+    for(let i=0;i<bufSz;i++)d[i]=Math.random()*2-1;
+  }
+  noiseNode=ctx.createBufferSource();
+  noiseNode.buffer=buf;noiseNode.loop=true;
+  noiseGain=ctx.createGain();
+  noiseGain.gain.value=S.volume*.4;
+  const filt=ctx.createBiquadFilter();
+
+  if(type==='rain'){
+    filt.type='bandpass';filt.frequency.value=600;filt.Q.value=.5;
+    const lfo=ctx.createOscillator(),lg=ctx.createGain();
+    lfo.frequency.value=.4;lg.gain.value=.06;
+    lfo.connect(lg);lg.connect(noiseGain.gain);lfo.start();
+  } else if(type==='forest'){
+    filt.type='highpass';filt.frequency.value=1500;
+    noiseGain.gain.value=S.volume*.12;
+  } else if(type==='morning'){
+    filt.type='bandpass';filt.frequency.value=1800;filt.Q.value=.3;
+    noiseGain.gain.value=S.volume*.15;
+  } else if(type==='meditation'){
+    filt.type='lowpass';filt.frequency.value=150;
+    noiseGain.gain.value=S.volume*.2;
+    const lfo=ctx.createOscillator(),lg=ctx.createGain();
+    lfo.frequency.value=.1;lg.gain.value=.08;
+    lfo.connect(lg);lg.connect(noiseGain.gain);lfo.start();
+  } else if(type==='om'){
+    stopNoise();
+    playOmChant();
+    if(btn)btn.classList.add('playing');
+    return;
+  } else if(type==='ram'){
+    stopNoise();
+    playRamChant();
+    if(btn)btn.classList.add('playing');
+    return;
+  } else if(type==='birds'){
+    stopNoise();
+    playBirdAmbient();
+    if(btn)btn.classList.add('playing');
+    return;
+  } else {
+    filt.type='lowpass';filt.frequency.value=400;
+  }
+
+  noiseNode.connect(filt);filt.connect(noiseGain);noiseGain.connect(ctx.destination);
+  noiseNode.start();
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('playing'));
+  if(btn)btn.classList.add('playing');
+}
+
+function playOmChant(){
+  const ctx=ac();
+  const osc=ctx.createOscillator();
+  const osc2=ctx.createOscillator();
+  const g=ctx.createGain();
+  const g2=ctx.createGain();
+  osc.connect(g);g.connect(ctx.destination);
+  osc2.connect(g2);g2.connect(ctx.destination);
+  osc.type='sine';osc.frequency.value=136.1; // Om frequency
+  osc2.type='sine';osc2.frequency.value=272.2; // Octave
+  g.gain.value=.3*S.volume;
+  g2.gain.value=.15*S.volume;
+  // Tremolo
+  const lfo=ctx.createOscillator(),lg=ctx.createGain();
+  lfo.frequency.value=4;lg.gain.value=.05;
+  lfo.connect(lg);lg.connect(g.gain);lfo.start();
+  osc.start();osc2.start();
+  noiseNode={stop:()=>{osc.stop();osc2.stop();lfo.stop();}};
+}
+
+function playRamChant(){
+  const ctx=ac();
+  const notes=[264,297,330,352,396]; // Sa Re Ga Ma Pa
+  let i=0;
+  const playNote=()=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.connect(gn);gn.connect(ctx.destination);
+    o.type='triangle';o.frequency.value=notes[i%notes.length];
+    gn.gain.setValueAtTime(.3*S.volume,ctx.currentTime);
+    gn.gain.linearRampToValueAtTime(0,ctx.currentTime+.8);
+    o.start();o.stop(ctx.currentTime+.8);
+    i++;
+  };
+  playNote();
+  const interval=setInterval(playNote,900);
+  noiseNode={stop:()=>clearInterval(interval)};
+}
+
+function playBirdAmbient(){
+  const ctx=ac();
+  const interval=setInterval(()=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.connect(gn);gn.connect(ctx.destination);
+    o.type='sine';
+    const base=1000+Math.random()*800;
+    o.frequency.setValueAtTime(base,ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(base*1.5,ctx.currentTime+.15);
+    o.frequency.exponentialRampToValueAtTime(base,ctx.currentTime+.3);
+    gn.gain.setValueAtTime(0,ctx.currentTime);
+    gn.gain.linearRampToValueAtTime(.15*S.volume,ctx.currentTime+.05);
+    gn.gain.linearRampToValueAtTime(0,ctx.currentTime+.3);
+    o.start();o.stop(ctx.currentTime+.3);
+  },800+Math.random()*1200);
+  noiseNode={stop:()=>clearInterval(interval)};
+}
+
+// ── AUDIO: FREQUENCY TONES ───────────
+function stopFreq(){
+  if(freqNode){try{freqNode.stop();}catch(e){}freqNode=null;}
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('playing'));
+}
+function playFreq(hz,btn){
+  stopFreq();
+  const ctx=ac();
+  if(hz<=40){
+    // Binaural beats
+    const carrier=200;
+    const L=ctx.createOscillator(),R=ctx.createOscillator();
+    const Lg=ctx.createGain(),Rg=ctx.createGain();
+    const merger=ctx.createChannelMerger(2);
+    L.connect(Lg);R.connect(Rg);
+    Lg.connect(merger,0,0);Rg.connect(merger,0,1);
+    merger.connect(ctx.destination);
+    L.frequency.value=carrier;R.frequency.value=carrier+hz;
+    Lg.gain.value=.25*S.volume;Rg.gain.value=.25*S.volume;
+    L.start();R.start();
+    freqNode={stop:()=>{L.stop();R.stop();}};
+  } else {
+    // Pure tone with soft envelope
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    const lfo=ctx.createOscillator();
+    const lfog=ctx.createGain();
+    o.connect(g);lfo.connect(lfog);lfog.connect(g.gain);g.connect(ctx.destination);
+    o.type='sine';o.frequency.value=hz;
+    lfo.frequency.value=.5;lfog.gain.value=.05;
+    g.gain.value=.2*S.volume;
+    o.start();lfo.start();
+    freqNode={stop:()=>{o.stop();lfo.stop();}};
+  }
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('playing'));
+  if(btn)btn.classList.add('playing');
+  toast(`Playing ${hz}Hz tone 🎵`);
+}
+
+// ── CUSTOM AUDIO ─────────────────────
+let customSrc=null;
+function loadCustomAudio(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const ctx=ac();
+    customAudioBuf=await ctx.decodeAudioData(e.target.result.slice(0));
+    document.getElementById('custom-name').textContent=`✅ Loaded: ${file.name}`;
+    toast('Custom sound loaded!');
+  };
+  reader.readAsArrayBuffer(file);
+}
+function testCustom(){
+  if(!customAudioBuf){toast('Upload an audio file first');return;}
+  const ctx=ac();
+  const src=ctx.createBufferSource();
+  const g=ctx.createGain();g.gain.value=S.volume;
+  src.buffer=customAudioBuf;src.connect(g);g.connect(ctx.destination);src.start();
+}
+
+// ── VOLUME ───────────────────────────
+function setVol(v){
+  S.volume=parseFloat(v);
+  document.getElementById('vol-pct').textContent=Math.round(v*100)+'%';
+  if(noiseGain)noiseGain.gain.value=S.volume*.4;
+  save();
+}
+
+// ── BACKGROUND ───────────────────────
 function applyBg(){
   const url=document.getElementById('bg-url').value.trim();if(!url)return;
-  setBg(url);
-}
-function randBg(){
-  const t=BG_TOPICS[Math.floor(Math.random()*BG_TOPICS.length)];
-  const url=`https://source.unsplash.com/1600x900/?${t}&t=${Date.now()}`;
-  document.getElementById('bg-url').value=url;setBg(url);
-}
-function setBg(url){
-  const ov=document.getElementById('bg-overlay');
+  const ov=document.getElementById('bgov');
   ov.style.backgroundImage=`url("${url}")`;ov.classList.add('on');
 }
 function clearBg(){
-  document.getElementById('bg-overlay').classList.remove('on');
+  document.getElementById('bgov').classList.remove('on');
   document.getElementById('bg-url').value='';
 }
 
-// ══════════════════════════════════════════════
-// WEATHER (Open-Meteo, no key)
-// ══════════════════════════════════════════════
+// ── WEATHER ──────────────────────────
 async function fetchWeather(){
   if(!navigator.geolocation)return;
   navigator.geolocation.getCurrentPosition(async({coords})=>{
@@ -1876,43 +2184,130 @@ async function fetchWeather(){
       const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true`);
       const d=await r.json();
       const cw=d.current_weather;
-      const emoji=wEmoji(cw.weathercode);
-      document.getElementById('weather-info').textContent=`${emoji} ${Math.round(cw.temperature)}°C`;
+      const emo={0:'☀️',1:'⛅',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️'}[cw.weathercode]||'🌡️';
+      document.getElementById('weather-pill').textContent=`${emo} ${Math.round(cw.temperature)}°C`;
     }catch(e){}
   },()=>{});
 }
-function wEmoji(c){
-  if(c===0)return'☀️';if(c<=3)return'⛅';if(c<=49)return'🌫️';
-  if(c<=67)return'🌧️';if(c<=77)return'❄️';if(c<=82)return'🌦️';return'⛈️';
-}
 
-// ══════════════════════════════════════════════
-// BATTERY
-// ══════════════════════════════════════════════
+// ── BATTERY ──────────────────────────
 async function fetchBattery(){
   if(!navigator.getBattery)return;
   try{
     const b=await navigator.getBattery();
     const upd=()=>{
       const p=Math.round(b.level*100);
-      document.getElementById('battery-info').textContent=`${b.charging?'⚡':p>20?'🔋':'🪫'} ${p}%`;
+      document.getElementById('battery-pill').textContent=`${b.charging?'⚡':p>20?'🔋':'🪫'} ${p}%`;
     };
     upd();b.addEventListener('levelchange',upd);b.addEventListener('chargingchange',upd);
   }catch(e){}
 }
 
-// ══════════════════════════════════════════════
-// WAKE LOCK
-// ══════════════════════════════════════════════
+// ── WAKE LOCK ────────────────────────
 async function wakeLock(){
   if(!navigator.wakeLock)return;
   try{await navigator.wakeLock.request('screen');}catch(e){}
 }
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wakeLock();});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')wakeLock();
+});
 
-// ══════════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════════
+// ── PARTICLES ────────────────────────
+const cvs=document.getElementById('pcvs');
+const cx2=cvs.getContext('2d');
+let pts=[];
+function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
+function initPts(){
+  pts=[];
+  const n=Math.min(120,Math.floor(cvs.width*cvs.height/10000));
+  for(let i=0;i<n;i++)pts.push({
+    x:Math.random()*cvs.width,y:Math.random()*cvs.height,
+    r:Math.random()*1.3+.3,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:Math.random()*.6+.2
+  });
+}
+let mx2=window.innerWidth/2,my2=window.innerHeight/2;
+window.addEventListener('mousemove',e=>{mx2=e.clientX;my2=e.clientY;});
+function drawPts(){
+  cx2.clearRect(0,0,cvs.width,cvs.height);
+  if(!S.particles){requestAnimationFrame(drawPts);return;}
+  const col=getComputedStyle(document.documentElement).getPropertyValue('--pr').trim()||'#00d4ff';
+  pts.forEach(p=>{
+    const dx=p.x-mx2,dy=p.y-my2,dist=Math.hypot(dx,dy);
+    if(dist<90){p.vx+=dx/dist*.1;p.vy+=dy/dist*.1;}
+    p.vx*=.985;p.vy*=.985;
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=cvs.width;if(p.x>cvs.width)p.x=0;
+    if(p.y<0)p.y=cvs.height;if(p.y>cvs.height)p.y=0;
+    cx2.beginPath();cx2.arc(p.x,p.y,p.r,0,Math.PI*2);
+    cx2.globalAlpha=p.a*.85;cx2.fillStyle=col;cx2.fill();cx2.globalAlpha=1;
+  });
+  cx2.globalAlpha=.05;
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+      if(d<110){
+        cx2.beginPath();cx2.moveTo(pts[i].x,pts[i].y);
+        cx2.lineTo(pts[j].x,pts[j].y);
+        cx2.strokeStyle=col;cx2.lineWidth=.5;cx2.stroke();
+      }
+    }
+  }
+  cx2.globalAlpha=1;
+  requestAnimationFrame(drawPts);
+}
+
+// ── QUOTES ───────────────────────────
+const QUOTES=[
+  'The best time to start was yesterday. The second best is now.',
+  'Discipline is the bridge between goals and accomplishment. — Jim Rohn',
+  'Focus on being productive instead of busy. — Tim Ferriss',
+  'It does not matter how slowly you go, as long as you do not stop. — Confucius',
+  'Lost time is never found again. — Benjamin Franklin',
+  'Your time is limited — don\'t waste it living someone else\'s life. — Steve Jobs',
+  'Well begun is half done. — Aristotle',
+  'Success is the sum of small efforts, repeated day in and day out.',
+  'Work is the only way. — Srinivasa Ramanujan',
+  'Either you run the day, or the day runs you. — Jim Rohn',
+  'मेहनत वो चाबी है जो किस्मत का ताला खोल देती है।',
+  'हर दिन नया मौका है — खुद को बेहतर बनाने का।',
+  'जिंदगी में कुछ पाना है तो वक्त को अपना बनाओ।',
+  'An investment in knowledge pays the best interest. — Benjamin Franklin',
+  'The secret of getting ahead is getting started. — Mark Twain',
+  'You don\'t have to be great to start, but you have to start to be great.',
+];
+function loadQuote(){
+  const q=QUOTES[Math.floor(Date.now()/86400000)%QUOTES.length];
+  document.getElementById('quote-pill').textContent=`"${q.split('—')[0].slice(0,60).trim()}…"`;
+}
+
+// ── ACHIEVEMENTS ─────────────────────
+const ACHS=[
+  {id:'early_bird',icon:'🐦',name:'Early Bird',desc:'Alarm before 6 AM'},
+  {id:'night_owl',icon:'🦉',name:'Night Owl',desc:'Alarm after 11 PM'},
+  {id:'focus_master',icon:'🎯',name:'Focus Master',desc:'10 Pomodoros done'},
+  {id:'streak_king',icon:'🔥',name:'Streak King',desc:'7-day streak'},
+  {id:'time_lord',icon:'⏱️',name:'Time Lord',desc:'50 stopwatch laps'},
+  {id:'punctual',icon:'⚡',name:'Punctual',desc:'Dismiss alarm in 5s'},
+  {id:'pomo_done',icon:'🍅',name:'First Focus',desc:'First Pomodoro done'},
+  {id:'alarm_set',icon:'⏰',name:'Alarm Setter',desc:'First alarm set'},
+  {id:'study_done',icon:'📚',name:'Scholar',desc:'Study goal reached'},
+  {id:'lap_rec',icon:'🏁',name:'Pacer',desc:'First lap recorded'},
+];
+function checkAch(id){
+  if(S.achievements[id])return;
+  S.achievements[id]=Date.now();save();renderBadges();
+  const a=ACHS.find(x=>x.id===id);
+  if(a)toast(`🏆 ${a.icon} Achievement: ${a.name}!`);
+}
+function renderBadges(){
+  document.getElementById('badge-grid').innerHTML=ACHS.map(a=>`
+    <div class="badge ${S.achievements[a.id]?'earned':''}">
+      <div class="badge-ic">${a.icon}</div>
+      <div class="badge-nm">${a.name}</div>
+    </div>`).join('');
+}
+
+// ── TABS ─────────────────────────────
 function openTab(name,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1922,144 +2317,55 @@ function openTab(name,btn){
   haptic();
 }
 
-// ══════════════════════════════════════════════
-// PARTICLES
-// ══════════════════════════════════════════════
-const cvs=document.getElementById('particle-canvas');
-const cx2=cvs.getContext('2d');
-let pts=[];
-function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
-function initPts(){
-  pts=[];
-  const n=Math.min(140,Math.floor(cvs.width*cvs.height/8000));
-  for(let i=0;i<n;i++)pts.push({
-    x:Math.random()*cvs.width,y:Math.random()*cvs.height,
-    r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
-    a:Math.random()*.6+.2,
-  });
-}
-let mx=window.innerWidth/2,my=window.innerHeight/2;
-window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-function drawPts(){
-  cx2.clearRect(0,0,cvs.width,cvs.height);
-  if(!S.particles){requestAnimationFrame(drawPts);return;}
-  const col=getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#00d4ff';
-  pts.forEach(p=>{
-    const dx=p.x-mx,dy=p.y-my,dist=Math.hypot(dx,dy);
-    if(dist<100){p.vx+=dx/dist*.12;p.vy+=dy/dist*.12;}
-    p.vx*=.985;p.vy*=.985;
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.x<0)p.x=cvs.width;if(p.x>cvs.width)p.x=0;
-    if(p.y<0)p.y=cvs.height;if(p.y>cvs.height)p.y=0;
-    cx2.beginPath();cx2.arc(p.x,p.y,p.r,0,Math.PI*2);
-    cx2.globalAlpha=p.a*.9;cx2.fillStyle=col;cx2.fill();cx2.globalAlpha=1;
-  });
-  cx2.globalAlpha=.06;
-  for(let i=0;i<pts.length;i++){
-    for(let j=i+1;j<pts.length;j++){
-      const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
-      if(d<120){
-        cx2.beginPath();cx2.moveTo(pts[i].x,pts[i].y);
-        cx2.lineTo(pts[j].x,pts[j].y);
-        cx2.strokeStyle=col;cx2.lineWidth=.6;cx2.stroke();
-      }
-    }
-  }
-  cx2.globalAlpha=1;
-  requestAnimationFrame(drawPts);
-}
-
-// ══════════════════════════════════════════════
-// CUSTOM CURSOR
-// ══════════════════════════════════════════════
-const curEl=document.getElementById('cur');
-document.addEventListener('mousemove',e=>{curEl.style.left=e.clientX+'px';curEl.style.top=e.clientY+'px';});
-document.addEventListener('mousedown',()=>curEl.classList.add('click'));
-document.addEventListener('mouseup',()=>curEl.classList.remove('click'));
-
-// ══════════════════════════════════════════════
-// KEYBOARD SHORTCUTS
-// ══════════════════════════════════════════════
+// ── KEYBOARD ─────────────────────────
 document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
   switch(e.key){
-    case 'f':case 'F':enterFullscreen();break;
-    case ' ':
-      e.preventDefault();
-      if(pomoRunning)pomoPause();else if(swRunning)swHalt();else pomoStart();
-      break;
+    case 'f':case 'F':goFull();break;
+    case ' ':e.preventDefault();
+      if(S.pomoRunning||document.getElementById('pomo-pp').textContent.includes('Resume'))pomoToggle();
+      else swToggle();break;
     case 'l':case 'L':swLap();break;
     case 'r':case 'R':pomoReset();swClear();break;
-    case 'n':case 'N':document.getElementById('note-input').focus();break;
+    case 'n':case 'N':document.getElementById('note-in').focus();break;
     case 'v':case 'V':toggleVoice();break;
-    case '?':document.getElementById('kshint').classList.toggle('show');break;
     case 'd':case 'D':toggleDark();break;
-    case '1':case '2':case '3':case '4':case '5':case '6':case '7':{
-      const idx=parseInt(e.key)-1;
-      const tabs=document.querySelectorAll('.tab');
-      if(tabs[idx])openTab(TABS[idx],tabs[idx]);break;
-    }
+    case '?':document.getElementById('kshint').classList.toggle('show');break;
     case 'Escape':dismissAlarm();document.getElementById('kshint').classList.remove('show');break;
+    case '1':case '2':case '3':case '4':case '5':case '6':case '7':{
+      const i=parseInt(e.key)-1;
+      const tabs=document.querySelectorAll('.tab');
+      if(tabs[i])openTab(TABS[i],tabs[i]);break;
+    }
   }
 });
 
-// ══════════════════════════════════════════════
-// SWIPE GESTURES
-// ══════════════════════════════════════════════
-let touchX=null;
-document.addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;},{passive:true});
+// ── SWIPE ────────────────────────────
+let tx=null;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
 document.addEventListener('touchend',e=>{
-  if(touchX===null)return;
-  const dx=e.changedTouches[0].clientX-touchX;touchX=null;
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx;tx=null;
   if(Math.abs(dx)<60)return;
   const tabs=document.querySelectorAll('.tab');
-  if(dx<0){tabIdx=(tabIdx+1)%TABS.length;}
-  else{tabIdx=(tabIdx-1+TABS.length)%TABS.length;}
+  tabIdx=dx<0?(tabIdx+1)%TABS.length:(tabIdx-1+TABS.length)%TABS.length;
   openTab(TABS[tabIdx],tabs[tabIdx]);
 },{passive:true});
 
-// ══════════════════════════════════════════════
-// HAPTIC FEEDBACK
-// ══════════════════════════════════════════════
+// ── HAPTIC ───────────────────────────
 function haptic(ms=20){if(navigator.vibrate)navigator.vibrate(ms);}
 
-// ══════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════
+// ── TOAST ────────────────────────────
 let toastT=null;
 function toast(msg){
   const el=document.getElementById('toast');
   el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2500);
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-// ══════════════════════════════════════════════
-// DATA EXPORT / IMPORT / RESET
-// ══════════════════════════════════════════════
-function exportData(){
-  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='chrono-backup.json';a.click();
-}
-function importData(){
-  const input=document.createElement('input');input.type='file';input.accept='.json';
-  input.onchange=e=>{
-    const reader=new FileReader();
-    reader.onload=ev=>{try{Object.assign(S,JSON.parse(ev.target.result));save();applyAll();renderAll();toast('Data imported!');}catch(e){toast('Invalid file');}};
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
-function resetAll(){
-  if(!confirm('Reset all data?'))return;
-  localStorage.removeItem('chronoU2');location.reload();
-}
-
-// ══════════════════════════════════════════════
-// PWA
-// ══════════════════════════════════════════════
+// ── PWA ──────────────────────────────
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();deferredInstall=e;
@@ -2071,58 +2377,63 @@ function installPWA(){
   deferredInstall.userChoice.then(()=>{deferredInstall=null;});
 }
 
-// ══════════════════════════════════════════════
-// APPLY SAVED SETTINGS
-// ══════════════════════════════════════════════
+// ── DATA ─────────────────────────────
+function exportData(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='chrono-backup.json';a.click();
+}
+function importData(){
+  const input=document.createElement('input');input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const r=new FileReader();
+    r.onload=ev=>{try{Object.assign(S,JSON.parse(ev.target.result));save();applyAll();renderAll();toast('Data imported!');}catch(e){toast('Invalid file');}};
+    r.readAsText(e.target.files[0]);
+  };input.click();
+}
+function resetAll(){
+  if(!confirm('Reset ALL data? This cannot be undone.'))return;
+  localStorage.removeItem('chU3');location.reload();
+}
+
+// ── APPLY SAVED STATE ─────────────────
 function applyAll(){
   applyDark();
   setTheme(S.theme,null);
   setFont(S.font,null);
   document.getElementById('time-main').classList.toggle('neon',S.neon);
   document.getElementById('btn-neon').classList.toggle('active',S.neon);
-  document.getElementById('clock-card').classList.toggle('tilt-3d',S.tilt3d);
-  document.getElementById('btn-3d').classList.toggle('active',S.tilt3d);
-  document.getElementById('trk-particles').classList.toggle('on',S.particles);
+  document.getElementById('trk-ptcl').classList.toggle('on',S.particles);
   document.getElementById('trk-chime').classList.toggle('on',S.chime);
-  document.getElementById('cur').style.display=S.customCursor?'':'none';
-  document.getElementById('trk-cursor').classList.toggle('on',S.customCursor);
-  document.getElementById('vol-slider').value=S.masterVolume;
-  document.getElementById('vol-pct').textContent=Math.round(S.masterVolume*100)+'%';
-  // Restore clock mode
-  if(S.clockMode!=='digital'){
+  document.getElementById('vol-sl').value=S.volume;
+  document.getElementById('vol-pct').textContent=Math.round(S.volume*100)+'%';
+  document.getElementById('h24-hint').classList.toggle('show',S.is24h);
+  if(S.clockMode==='analog'){
     const btns=document.querySelectorAll('.mode-btn');
-    const idx={digital:0,analog:1,flip:2}[S.clockMode]||0;
-    setMode(S.clockMode,btns[idx]);
+    setMode('analog',btns[1]);
   }
 }
 function renderAll(){
   renderAlarms();renderNotes();renderBadges();renderStats();
-  renderCountdowns();renderLaps();renderPooja();buildCalendar();
+  renderCds();renderLaps();renderMeds();renderWater();renderSubjs();
+  renderCal();buildWorld();renderAus();buildCalendar();
 }
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
+// ── INIT ─────────────────────────────
 load();
 resizeCvs();initPts();drawPts();
-buildAnalog();buildWorld();
+buildAnalog();
 applyAll();renderAll();
 loadQuote();
 pomoDraw();
+buildCalendar();
 tick();setInterval(tick,1000);
 fetchWeather();setInterval(fetchWeather,3600000);
 fetchBattery();wakeLock();
-
-// Calendar init
-S.calMonth=new Date().getMonth();S.calYear=new Date().getFullYear();
-buildCalendar();
-
-// Auto refresh nature bg hourly if set
-setInterval(()=>{
-  const ov=document.getElementById('bg-overlay');
-  if(ov.classList.contains('on')&&S.lastBgRandom)randBg();
-},3600000);
-
+// Notification check
+if('Notification' in window&&Notification.permission==='default'){
+  document.getElementById('notif-banner').classList.add('show');
+}
 window.addEventListener('resize',()=>{resizeCvs();initPts();});
 </script>
 </body>
