@@ -182,15 +182,17 @@ It works instantly in any modern browser and can be installed as a native app on
 
 ---
 
-## 📁 File Structure
+## 📁 Project Structure
 
 ```
 CHRONO-Ultra/
-│
-├── index.html      ← Entire app (HTML + CSS + JS)
-├── sw.js           ← Service Worker (PWA offline)
-├── manifest.json   ← PWA config (install as app)
-└── README.md       ← This file
+├── index.html      # Entire app (HTML + CSS + JS)
+├── sw.js           # Service Worker (PWA offline)
+├── manifest.json   # PWA config (install as app)
+├── favicon.ico     # Browser tab icon
+├── icon-192.png    # PWA icon (192x192)
+├── icon-512.png    # PWA icon (512x512)
+└── README.md       # Project documentation
 ```
 
 ---
